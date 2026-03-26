@@ -124,15 +124,17 @@ body{background:#f0f4f1;font-family:'Poppins',sans-serif;font-weight:400;color:v
 .col-perdido  .col-name{color:var(--muted);}.col-perdido .col-bar{background:var(--gray3);}
 
 /* CARD */
-.card{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:13px 14px;cursor:pointer;transition:box-shadow 0.18s,border-color 0.18s;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:0 14px 13px;transition:box-shadow 0.18s,border-color 0.18s;position:relative;}
 .card:hover{box-shadow:0 2px 14px rgba(0,100,40,0.12);border-color:var(--green);}
-.card[draggable]{cursor:grab;}
-.card[draggable]:active{cursor:grabbing;}
-.card.dragging{opacity:0.35;transform:scale(0.97);border:2px dashed var(--green);}
-.col-cards.drag-over{background:rgba(0,136,53,0.07);border-radius:8px;outline:2px dashed var(--green);outline-offset:-4px;}
-.card-drag-handle{display:flex;align-items:center;gap:3px;margin-bottom:5px;color:var(--gray3);}
-.drag-dots{display:grid;grid-template-columns:1fr 1fr;gap:2px;width:10px;}
-.drag-dot{width:3px;height:3px;border-radius:50%;background:currentColor;}
+.card.dragging{opacity:0.25;transform:scale(0.96);pointer-events:none;}
+.col-cards.drag-over{background:rgba(0,136,53,0.08);border-radius:8px;outline:2.5px dashed var(--green);outline-offset:-4px;}
+.card-handle{padding:8px 0 5px;cursor:grab;display:flex;align-items:center;gap:5px;color:var(--gray3);transition:color 0.15s;}
+.card-handle:hover{color:var(--green);}
+.card-handle:active{cursor:grabbing;}
+.handle-icon{display:grid;grid-template-columns:1fr 1fr;gap:2.5px;width:10px;flex-shrink:0;}
+.handle-dot{width:3px;height:3px;border-radius:50%;background:currentColor;}
+.handle-txt{font-size:0.54rem;letter-spacing:0.8px;text-transform:uppercase;font-weight:600;}
+.card-body{cursor:pointer;}
 .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:4px;}
 .card-name{font-size:0.83rem;font-weight:700;color:var(--text);line-height:1.3;}
 .badge-q{display:inline-flex;align-items:center;font-size:0.57rem;font-weight:700;border-radius:4px;padding:2px 7px;background:#fff0e6;color:#c05000;border:1px solid #f8c99a;flex-shrink:0;text-transform:uppercase;}
@@ -636,35 +638,29 @@ function renderPipeline(){
     html+=`<div class="col ${CCLS[e.key]}">
       <div class="col-head"><span class="col-name">${e.label}</span><span class="col-cnt">${cards.length}</span></div>
       <div class="col-bar"></div>
-      <div class="col-cards" data-etapa="${e.key}"
-        ondragover="colDragOver(event)"
-        ondragleave="colDragLeave(event)"
-        ondrop="colDrop(event,'${e.key}')">`;
-    if(!cards.length) html+=`<div class="empty-col" data-empty="1">Arraste um card aqui</div>`;
+      <div class="col-cards" data-etapa="${e.key}">`;
+    if(!cards.length) html+=`<div class="empty-col">Arraste um card aqui</div>`;
     cards.forEach(([id,l])=>{
       const last=l.historico?.length?l.historico[l.historico.length-1].texto:null;
       const ds=l.data?new Date(l.data).toLocaleDateString('pt-BR'):'—';
-      html+=`<div class="card"
-        draggable="true"
-        data-id="${id}"
-        ondragstart="cardDragStart(event,'${id}')"
-        ondragend="cardDragEnd(event)"
-        onclick="cardClick(event,'${id}')">
-        <div class="card-drag-handle">
-          <div class="drag-dots">
-            <div class="drag-dot"></div><div class="drag-dot"></div>
-            <div class="drag-dot"></div><div class="drag-dot"></div>
-            <div class="drag-dot"></div><div class="drag-dot"></div>
+      html+=`<div class="card" data-id="${id}">
+        <div class="card-handle" data-id="${id}">
+          <div class="handle-icon">
+            <div class="handle-dot"></div><div class="handle-dot"></div>
+            <div class="handle-dot"></div><div class="handle-dot"></div>
+            <div class="handle-dot"></div><div class="handle-dot"></div>
           </div>
-          <span style="font-size:0.58rem;letter-spacing:0.8px;text-transform:uppercase;font-weight:600;">arraste para mover</span>
+          <span class="handle-txt">arraste para mover</span>
         </div>
-        <div class="card-head"><span class="card-name">${esc(l.nome)}</span><span class="badge-q">🔥 Quente</span></div>
-        ${l.empresa?`<div class="card-empresa">${esc(l.empresa)}</div>`:'<div style="height:4px"></div>'}
-        ${l.produto?`<div><span class="card-produto">${esc(l.produto)}</span></div>`:''}
-        <div class="card-meta">
-          <div class="meta-item"><span class="meta-lbl">Entrada</span><span class="meta-val">${ds}</span></div>
-          <div class="meta-item"><span class="meta-lbl">Telefone</span><span class="meta-val blue">${esc(l.tel||'—')}</span></div>
-          <div class="meta-item" style="grid-column:1/-1"><span class="meta-lbl">Última interação</span><span class="meta-val">${last?esc(last.substring(0,65))+(last.length>65?'…':''):'Nenhuma ainda'}</span></div>
+        <div class="card-body" data-id="${id}">
+          <div class="card-head"><span class="card-name">${esc(l.nome)}</span><span class="badge-q">🔥 Quente</span></div>
+          ${l.empresa?`<div class="card-empresa">${esc(l.empresa)}</div>`:'<div style="height:4px"></div>'}
+          ${l.produto?`<div><span class="card-produto">${esc(l.produto)}</span></div>`:''}
+          <div class="card-meta">
+            <div class="meta-item"><span class="meta-lbl">Entrada</span><span class="meta-val">${ds}</span></div>
+            <div class="meta-item"><span class="meta-lbl">Telefone</span><span class="meta-val blue">${esc(l.tel||'—')}</span></div>
+            <div class="meta-item" style="grid-column:1/-1"><span class="meta-lbl">Última interação</span><span class="meta-val">${last?esc(last.substring(0,65))+(last.length>65?'…':''):'Nenhuma ainda'}</span></div>
+          </div>
         </div>
       </div>`;
     });
@@ -673,50 +669,61 @@ function renderPipeline(){
   document.getElementById('pipeline').innerHTML=html;
   document.getElementById('badge-pipeline').textContent=quentes.length;
   document.getElementById('badge-lista').textContent=Object.keys(window._leads||{}).length;
+  initDragDrop();
 }
 
-function cardDragStart(e,id){
-  _dragId=id;
-  e.dataTransfer.effectAllowed='move';
-  e.dataTransfer.setData('text/plain',id);
-  setTimeout(()=>e.target.classList.add('dragging'),0);
-}
+function initDragDrop(){
+  const pipeline=document.getElementById('pipeline');
 
-function cardDragEnd(e){
-  e.target.classList.remove('dragging');
-  document.querySelectorAll('.col-cards').forEach(c=>c.classList.remove('drag-over'));
-  _dragId=null;
-}
+  /* Clique no card-body → abre modal */
+  pipeline.querySelectorAll('.card-body').forEach(body=>{
+    body.addEventListener('click',()=>abrirLead(body.dataset.id));
+  });
 
-function colDragOver(e){
-  e.preventDefault();
-  e.dataTransfer.dropEffect='move';
-  e.currentTarget.classList.add('drag-over');
-}
+  /* Drag começa só no handle */
+  pipeline.querySelectorAll('.card-handle').forEach(handle=>{
+    const card=handle.closest('.card');
+    handle.addEventListener('mousedown',()=>{ card.setAttribute('draggable','true'); });
+    handle.addEventListener('mouseup',  ()=>{ card.setAttribute('draggable','false'); });
+  });
 
-function colDragLeave(e){
-  // só remove se sair da coluna de verdade (não para um filho)
-  if(!e.currentTarget.contains(e.relatedTarget)){
-    e.currentTarget.classList.remove('drag-over');
-  }
-}
+  pipeline.querySelectorAll('.card').forEach(card=>{
+    card.setAttribute('draggable','false'); // começa false
+    card.addEventListener('dragstart',e=>{
+      _dragId=card.dataset.id;
+      e.dataTransfer.effectAllowed='move';
+      e.dataTransfer.setData('text/plain',_dragId);
+      setTimeout(()=>card.classList.add('dragging'),0);
+    });
+    card.addEventListener('dragend',()=>{
+      card.classList.remove('dragging');
+      card.setAttribute('draggable','false');
+      document.querySelectorAll('.col-cards').forEach(c=>c.classList.remove('drag-over'));
+    });
+  });
 
-function colDrop(e,etapa){
-  e.preventDefault();
-  e.currentTarget.classList.remove('drag-over');
-  const id=e.dataTransfer.getData('text/plain')||_dragId;
-  if(!id)return;
-  const l=(window._leads||{})[id];
-  if(!l||l.etapa===etapa)return;
-  window._update(id,{etapa});
-  toast(`Card movido para "${ELBL[etapa]}" ✓`,'green');
-}
-
-// evita abrir modal ao soltar drag
-function cardClick(e,id){
-  if(e.defaultPrevented)return;
-  // se foi um drag (mousemove > 5px) não abre
-  abrirLead(id);
+  /* Zonas de drop — cada col-cards */
+  pipeline.querySelectorAll('.col-cards').forEach(zone=>{
+    const etapa=zone.dataset.etapa;
+    zone.addEventListener('dragover',e=>{
+      e.preventDefault();
+      e.dataTransfer.dropEffect='move';
+      zone.classList.add('drag-over');
+    });
+    zone.addEventListener('dragleave',e=>{
+      if(!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+    });
+    zone.addEventListener('drop',e=>{
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      const id=e.dataTransfer.getData('text/plain')||_dragId;
+      if(!id) return;
+      const l=(window._leads||{})[id];
+      if(!l||l.etapa===etapa) return;
+      window._update(id,{etapa});
+      toast(`Movido para "${ELBL[etapa]}" ✓`,'green');
+    });
+  });
 }
 
 /* ═══ LISTA ═══ */
@@ -1052,9 +1059,6 @@ window.renderLista=renderLista;window.checkDuplic=checkDuplic;
 window.abrirImport=abrirImport;window.fecharImport=fecharImport;
 window.dragOver=dragOver;window.dragLeave=dragLeave;window.dropFile=dropFile;
 window.processCSV=processCSV;window.confirmarImport=confirmarImport;
-window.cardDragStart=cardDragStart;window.cardDragEnd=cardDragEnd;
-window.colDragOver=colDragOver;window.colDragLeave=colDragLeave;
-window.colDrop=colDrop;window.cardClick=cardClick;
 </script>
 </body>
 </html>
