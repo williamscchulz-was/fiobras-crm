@@ -627,7 +627,7 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
 </div>
 
 <!-- ═══ APP (só visível após login) ═══ -->
-<div id="appScreen" style="display:none;">
+<div id="appScreen" style="display:none">
 
 <!-- FIREBASE -->
 <script type="module">
@@ -1362,16 +1362,13 @@ document.getElementById('modalImport').addEventListener('click',e=>{if(e.target=
 window.addEventListener('DOMContentLoaded',()=>{
   window._leads={};
   buildGrids();
-  /* Restaura sessão se ainda estiver ativa */
-  const saved=sessionStorage.getItem('crm_user');
-  if(saved){
-    try{
-      window._user=JSON.parse(saved);
-      mostrarApp();
-    }catch(e){
-      sessionStorage.removeItem('crm_user');
-    }
-  }
+  /* Sempre limpa sessão ao abrir — força login toda vez */
+  sessionStorage.removeItem('crm_user');
+  window._user=null;
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('appScreen').style.display='none';
+  /* Foca no campo usuário */
+  setTimeout(()=>document.getElementById('loginUser').focus(),100);
 });
 
 window.abrirNovo=abrirNovo;window.abrirLead=abrirLead;window.fecharModal=fecharModal;
