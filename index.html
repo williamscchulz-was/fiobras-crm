@@ -4,6 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fiobras · CRM</title>
+<!-- PWA -->
+<meta name="theme-color" content="#008835">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Fiobras CRM">
+<link rel="manifest" id="pwaManifest">
+<script>
+/* Gera manifest dinamicamente */
+const manifest={
+  name:'Fiobras CRM',short_name:'Fiobras',start_url:'.',
+  display:'standalone',background_color:'#f0f4f1',theme_color:'#008835',
+  description:'CRM de Vendas Fiobras',
+  icons:[
+    {src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" fill="%23008835" rx="40"/><path d="M30 130 Q50 70 90 50 Q120 35 150 60" stroke="%230076BE" stroke-width="16" fill="none" stroke-linecap="round"/><path d="M30 160 Q60 100 110 80 Q140 65 170 90" stroke="%230076BE" stroke-width="16" fill="none" stroke-linecap="round"/><path d="M110 40 Q140 40 160 70 Q170 100 150 130 Q130 160 100 160" stroke="white" stroke-width="16" fill="none" stroke-linecap="round"/><path d="M130 30 Q150 30 160 50" stroke="%23FFCB00" stroke-width="12" fill="none" stroke-linecap="round"/></svg>',sizes:'192x192',type:'image/svg+xml'},
+    {src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="%23008835" rx="100"/><path d="M80 345 Q130 185 240 133 Q320 93 400 160" stroke="%230076BE" stroke-width="42" fill="none" stroke-linecap="round"/><path d="M80 430 Q160 265 293 213 Q373 173 453 240" stroke="%230076BE" stroke-width="42" fill="none" stroke-linecap="round"/><path d="M293 107 Q373 107 427 187 Q453 267 400 347 Q347 427 267 427" stroke="white" stroke-width="42" fill="none" stroke-linecap="round"/><path d="M347 80 Q400 80 427 133" stroke="%23FFCB00" stroke-width="32" fill="none" stroke-linecap="round"/></svg>',sizes:'512x512',type:'image/svg+xml'}
+  ]
+};
+const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+document.getElementById('pwaManifest').href=URL.createObjectURL(blob);
+
+/* Service Worker para cache offline */
+if('serviceWorker' in navigator){
+  const sw=`
+    const CACHE='fiobras-crm-v1';
+    const ASSETS=['/'];
+    self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
+    self.addEventListener('fetch',e=>{
+      if(e.request.url.includes('firebaseio.com')||e.request.url.includes('googleapis.com'))return;
+      e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match('/'))));
+    });
+  `;
+  const swBlob=new Blob([sw],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+}
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -213,18 +248,52 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
 .duplic-ver{font-size:0.62rem;color:var(--orange);font-weight:600;}
 
 /* HIST */
-.hist-list{display:flex;flex-direction:column;}
-.hist-item{border-left:2px solid var(--border);padding:0 0 14px 16px;margin-left:6px;position:relative;}
+.hist-list{display:flex;flex-direction:column;gap:0;margin-bottom:20px;}
+.hist-item{border-left:2px solid var(--border);padding:0 0 18px 16px;margin-left:8px;position:relative;}
 .hist-item:last-child{padding-bottom:0;}
-.hist-dot{position:absolute;left:-5px;top:5px;width:8px;height:8px;border-radius:50%;background:var(--green);border:2px solid var(--white);}
-.hist-ts{font-size:0.6rem;color:var(--gray3);font-family:'DM Mono',monospace;margin-bottom:2px;}
-.hist-txt{font-size:0.78rem;color:var(--text2);line-height:1.5;}
-.hist-empty{font-size:0.75rem;color:var(--gray3);padding:8px 0;}
-.hist-add{display:flex;gap:8px;margin-top:16px;}
-.hist-add input{flex:1;padding:9px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.78rem;outline:none;color:var(--text);}
-.hist-add input:focus{border-color:var(--green);}
-.hist-add button{padding:9px 14px;background:var(--green);color:#fff;border:none;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.7rem;font-weight:600;cursor:pointer;white-space:nowrap;}
-.hist-add button:hover{background:var(--green2);}
+.hist-dot{position:absolute;left:-6px;top:6px;width:10px;height:10px;border-radius:50%;border:2px solid var(--white);}
+.hist-dot.tipo-whatsapp{background:#25d366;}
+.hist-dot.tipo-ligacao {background:var(--blue);}
+.hist-dot.tipo-email   {background:var(--orange);}
+.hist-dot.tipo-reuniao {background:var(--purple);}
+.hist-dot.tipo-outro   {background:var(--gray3);}
+.hist-header{display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap;}
+.hist-tipo-badge{display:inline-flex;align-items:center;gap:4px;font-size:0.6rem;font-weight:700;border-radius:4px;padding:2px 8px;text-transform:uppercase;letter-spacing:0.4px;}
+.hbadge-whatsapp{background:#e6faf0;color:#1a9e4e;border:1px solid #a8e6c0;}
+.hbadge-ligacao {background:var(--blue-l);color:#0a3d6e;border:1px solid #9cc8f0;}
+.hbadge-email   {background:var(--orange-l);color:#8a3a00;border:1px solid #f8c99a;}
+.hbadge-reuniao {background:var(--purple-l);color:#4a1f80;border:1px solid #c4a0f0;}
+.hbadge-outro   {background:var(--gray2);color:var(--muted);border:1px solid var(--gray3);}
+.hist-retorno{display:inline-flex;align-items:center;gap:3px;font-size:0.6rem;font-weight:700;border-radius:4px;padding:2px 8px;text-transform:uppercase;}
+.ret-sim    {background:#e6faf0;color:#1a9e4e;border:1px solid #a8e6c0;}
+.ret-nao    {background:var(--red-l);color:var(--red);border:1px solid #f5b0b0;}
+.ret-aguard {background:var(--yellow-l);color:#8a6500;border:1px solid #f5d980;}
+.hist-ts{font-size:0.6rem;color:var(--gray3);font-family:'DM Mono',monospace;margin-left:auto;}
+.hist-autor{font-size:0.62rem;color:var(--muted);font-weight:500;}
+.hist-txt{font-size:0.78rem;color:var(--text2);line-height:1.5;margin-top:3px;}
+.hist-empty{font-size:0.75rem;color:var(--gray3);padding:12px 0;text-align:center;}
+
+/* FORM NOVA INTERAÇÃO */
+.hist-form{background:var(--gray);border-radius:10px;padding:14px 16px;border:1px solid var(--gray2);}
+.hist-form-title{font-size:0.6rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.hist-tipo-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.hbtn{padding:6px 12px;border:1.5px solid var(--border);border-radius:6px;background:var(--white);font-family:'Poppins',sans-serif;font-size:0.68rem;font-weight:600;cursor:pointer;transition:all 0.15s;color:var(--muted);}
+.hbtn:hover{border-color:var(--green);color:var(--green);}
+.hbtn.active-whatsapp{background:#e6faf0;border-color:#1a9e4e;color:#1a9e4e;}
+.hbtn.active-ligacao {background:var(--blue-l);border-color:var(--blue);color:#0a3d6e;}
+.hbtn.active-email   {background:var(--orange-l);border-color:var(--orange);color:#8a3a00;}
+.hbtn.active-reuniao {background:var(--purple-l);border-color:var(--purple);color:#4a1f80;}
+.hbtn.active-outro   {background:var(--gray2);border-color:var(--gray3);color:var(--muted);}
+.hist-retorno-row{display:flex;gap:6px;margin-bottom:12px;}
+.rbtn{flex:1;padding:7px 6px;border:1.5px solid var(--border);border-radius:6px;background:var(--white);font-family:'Poppins',sans-serif;font-size:0.68rem;font-weight:600;cursor:pointer;transition:all 0.15s;color:var(--muted);text-align:center;}
+.rbtn.active-sim    {background:#e6faf0;border-color:#1a9e4e;color:#1a9e4e;}
+.rbtn.active-nao    {background:var(--red-l);border-color:var(--red);color:var(--red);}
+.rbtn.active-aguard {background:var(--yellow-l);border-color:#c9a000;color:#8a6500;}
+.hist-obs-row{display:flex;gap:8px;margin-top:4px;}
+.hist-obs-row input{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.78rem;outline:none;color:var(--text);background:var(--white);}
+.hist-obs-row input:focus{border-color:var(--green);}
+.hist-obs-row button{padding:8px 16px;background:var(--green);color:#fff;border:none;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.7rem;font-weight:600;cursor:pointer;white-space:nowrap;}
+.hist-obs-row button:hover{background:var(--green2);}
 
 /* FOOTER MODAL */
 .modal-foot{padding:14px 26px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
@@ -256,6 +325,18 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
 .toast.show{opacity:1;}
 .toast.green{background:var(--green);}
 
+/* FOLLOW-UP BADGES */
+.fu-badge{font-size:0.6rem;font-weight:700;border-radius:4px;padding:3px 8px;margin-top:6px;display:inline-flex;align-items:center;gap:3px;}
+.fu-atrasado{background:var(--red-l);color:var(--red);border:1px solid #f5b0b0;}
+.fu-hoje    {background:#fff0e6;color:#c05000;border:1px solid #f8c99a;}
+.fu-breve   {background:var(--yellow-l);color:#7a5800;border:1px solid #f5d980;}
+.fu-futuro  {background:var(--gray2);color:var(--muted);border:1px solid var(--gray3);}
+
+/* TEMPO NO PIPELINE */
+.tempo-badge{font-size:0.58rem;font-weight:700;border-radius:4px;padding:2px 7px;margin-top:5px;display:inline-flex;align-items:center;gap:3px;}
+.tempo-ok   {background:var(--gray2);color:var(--muted);border:1px solid var(--gray3);}
+.tempo-alerta{background:var(--red-l);color:var(--red);border:1px solid #f5b0b0;}
+
 @media(max-width:700px){
   .dash-wrap,.pipeline-wrap,.lista-wrap,.kanban-info{padding-left:14px;padding-right:14px;}
   .header,.tabs{padding-left:14px;padding-right:14px;}
@@ -277,6 +358,14 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
     <div><div class="logo-text">Fiobras</div><div class="logo-crm">CRM de Vendas</div></div>
   </div>
   <div class="header-actions">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 4px;">
+      <div style="text-align:right;">
+        <div style="font-size:0.72rem;font-weight:600;color:var(--text)" id="userNome"></div>
+        <div style="font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;" id="userPapel"></div>
+      </div>
+      <button onclick="fazerLogout()" style="padding:6px 12px;background:var(--white);border:1.5px solid var(--border);border-radius:7px;font-family:'Poppins',sans-serif;font-size:0.65rem;font-weight:600;color:var(--muted);cursor:pointer;" title="Sair">Sair</button>
+    </div>
+    <div style="width:1px;height:28px;background:var(--border);"></div>
     <button class="btn-outline" onclick="abrirImport()">
       <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3 6l3.5 3.5L10 6M1 11h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Importar CSV
@@ -290,8 +379,8 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
 
 <div class="tabs">
   <button class="tab active" onclick="switchView('dashboard',this)">Dashboard</button>
-  <button class="tab" onclick="switchView('pipeline',this)">Pipeline <span class="tab-badge" id="badge-pipeline">0</span></button>
-  <button class="tab" onclick="switchView('lista',this)">Banco de Leads <span class="tab-badge gray" id="badge-lista">0</span></button>
+  <button class="tab tab-comercial" onclick="switchView('pipeline',this)">Pipeline <span class="tab-badge" id="badge-pipeline">0</span></button>
+  <button class="tab tab-comercial" onclick="switchView('lista',this)">Banco de Leads <span class="tab-badge gray" id="badge-lista">0</span></button>
 </div>
 
 <!-- ═══ DASHBOARD ═══ -->
@@ -399,6 +488,10 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
           <label>Observações</label>
           <textarea id="f-obs" placeholder="Contexto da conversa, necessidades, detalhes..."></textarea>
         </div>
+        <div class="fld">
+          <label>📅 Próximo follow-up</label>
+          <input type="date" id="f-followup">
+        </div>
       </div>
     </div>
 
@@ -420,9 +513,30 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
     <!-- HISTÓRICO TAB -->
     <div class="mpanel" id="mp-historico">
       <div class="hist-list" id="histList"></div>
-      <div class="hist-add">
-        <input type="text" id="histInput" placeholder="Ex: Ligação realizada — aguarda proposta...">
-        <button onclick="addHist()">+ Registrar</button>
+      <div class="hist-form">
+        <div class="hist-form-title">Registrar nova interação</div>
+        <!-- Tipo -->
+        <div style="font-size:0.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Tipo de contato</div>
+        <div class="hist-tipo-row">
+          <button class="hbtn active-whatsapp" data-tipo="whatsapp" onclick="setHTipo('whatsapp')">💬 WhatsApp</button>
+          <button class="hbtn" data-tipo="ligacao"  onclick="setHTipo('ligacao')">📞 Ligação</button>
+          <button class="hbtn" data-tipo="email"    onclick="setHTipo('email')">✉ E-mail</button>
+          <button class="hbtn" data-tipo="reuniao"  onclick="setHTipo('reuniao')">🤝 Reunião</button>
+          <button class="hbtn" data-tipo="outro"    onclick="setHTipo('outro')">· · · Outro</button>
+        </div>
+        <!-- Retorno -->
+        <div style="font-size:0.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Houve retorno?</div>
+        <div class="hist-retorno-row">
+          <button class="rbtn active-aguard" data-ret="aguardando" onclick="setHRet('aguardando')">⏳ Aguardando</button>
+          <button class="rbtn" data-ret="sim" onclick="setHRet('sim')">✓ Sim — houve retorno</button>
+          <button class="rbtn" data-ret="nao" onclick="setHRet('nao')">✕ Não houve retorno</button>
+        </div>
+        <!-- Observação + botão -->
+        <div style="font-size:0.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Observações</div>
+        <div class="hist-obs-row">
+          <input type="text" id="histInput" placeholder="Ex: Enviou proposta, aguarda aprovação do gestor...">
+          <button onclick="addHist()">+ Registrar</button>
+        </div>
       </div>
     </div>
 
@@ -473,11 +587,54 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
 
 <div class="toast" id="toast"></div>
 
+<!-- ═══ TELA DE LOGIN ═══ -->
+<div id="loginScreen" style="display:flex;position:fixed;inset:0;background:#f0f4f1;z-index:9000;align-items:center;justify-content:center;flex-direction:column;">
+  <div style="background:#fff;border-radius:16px;padding:40px 36px;width:360px;max-width:92vw;box-shadow:0 20px 60px rgba(0,60,20,0.14);border:1px solid var(--border);">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px;">
+      <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
+        <path d="M6 26 Q10 14 18 10 Q24 7 30 12" stroke="#0076BE" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M6 32 Q12 20 22 16 Q28 13 34 18" stroke="#0076BE" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M22 8 Q28 8 32 14 Q34 20 30 26 Q26 32 20 32" stroke="#008835" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M26 6 Q30 6 32 10" stroke="#FFCB00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div style="font-size:1.2rem;font-weight:700;color:var(--green);font-family:'Poppins',sans-serif;">Fiobras</div>
+        <div style="font-size:0.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);font-weight:500;">CRM de Vendas</div>
+      </div>
+    </div>
+    <div style="font-size:0.88rem;font-weight:600;color:var(--text);margin-bottom:20px;font-family:'Poppins',sans-serif;">Entrar no sistema</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <label style="font-size:0.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-family:'Poppins',sans-serif;">Usuário</label>
+        <input id="loginUser" type="text" autocomplete="username"
+          style="padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.85rem;outline:none;color:var(--text);"
+          onkeydown="if(event.key==='Enter')document.getElementById('loginSenha').focus()">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <label style="font-size:0.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-family:'Poppins',sans-serif;">Senha</label>
+        <input id="loginSenha" type="password" autocomplete="current-password"
+          style="padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.85rem;outline:none;color:var(--text);"
+          onkeydown="if(event.key==='Enter')fazerLogin()">
+      </div>
+      <div id="loginErro" style="display:none;background:var(--red-l);border:1px solid #f5b0b0;border-radius:7px;padding:9px 12px;font-size:0.73rem;color:var(--red);font-family:'Poppins',sans-serif;"></div>
+      <button id="loginBtn" onclick="fazerLogin()"
+        style="margin-top:4px;padding:11px;background:var(--green);color:#fff;border:none;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;transition:background 0.18s;">
+        Entrar
+      </button>
+    </div>
+  </div>
+  <div style="margin-top:16px;font-size:0.68rem;color:var(--muted);font-family:'Poppins',sans-serif;">Fiobras · CRM Interno · Acesso restrito</div>
+</div>
+
+<!-- ═══ APP (só visível após login) ═══ -->
+<div id="appScreen" style="display:none;">
+
 <!-- FIREBASE -->
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import{getDatabase,ref,onValue,push,update,remove}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
-const db=getDatabase(initializeApp({
+
+const cfg={
   apiKey:"AIzaSyCv2YsaTAj38o55M8nBbZ_3s939XWLAmM4",
   authDomain:"fiobras-preco.firebaseapp.com",
   databaseURL:"https://fiobras-preco-default-rtdb.firebaseio.com",
@@ -485,7 +642,8 @@ const db=getDatabase(initializeApp({
   storageBucket:"fiobras-preco.firebasestorage.app",
   messagingSenderId:"828256608601",
   appId:"1:828256608601:web:8e73fde16eaa9ad5882c48"
-}));
+};
+const db=getDatabase(initializeApp(cfg));
 const lr=ref(db,'crm/leads');
 onValue(lr,s=>{window._leads=s.val()||{};window.renderAll&&window.renderAll();});
 window._push  =d=>push(lr,d);
@@ -609,7 +767,28 @@ function renderDashboard(){
       </div>
     </div>
 
-    <!-- MESES -->
+    <!-- FOLLOW-UPS HOJE/ATRASADOS -->
+    <div class="dash-card" style="margin-bottom:16px;border-left:3px solid var(--orange);">
+      <div class="dash-card-title">📅 Follow-ups que precisam de atenção</div>
+      ${(()=>{
+        const urgentes=a.filter(l=>l.followup&&diasAte(l.followup)<=2&&l.qual==='quente'&&l.etapa!=='ganho'&&l.etapa!=='perdido');
+        if(!urgentes.length) return`<div style="font-size:0.75rem;color:var(--gray3)">Nenhum follow-up urgente no momento ✓</div>`;
+        return urgentes.sort((a,b)=>diasAte(a.followup)-diasAte(b.followup)).map(l=>{
+          const d=diasAte(l.followup);
+          const fmt=new Date(l.followup+'T00:00:00').toLocaleDateString('pt-BR');
+          const cor=d<0?'var(--red)':d===0?'var(--orange)':'#7a5800';
+          const lbl=d<0?`Atrasado ${Math.abs(d)} dia(s)`:d===0?'Hoje':d===1?'Amanhã':`Em ${d} dias`;
+          return`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray2);gap:12px;">
+            <div>
+              <span style="font-size:0.8rem;font-weight:600">${esc(l.nome)}</span>
+              ${l.empresa?`<span style="font-size:0.7rem;color:var(--muted)"> · ${esc(l.empresa)}</span>`:''}
+              <div style="font-size:0.68rem;color:var(--muted);margin-top:1px">${ELBL[l.etapa]||l.etapa}</div>
+            </div>
+            <span style="font-size:0.65rem;font-weight:700;color:${cor};white-space:nowrap">${lbl} · ${fmt}</span>
+          </div>`;
+        }).join('');
+      })()}
+    </div>
     <div class="dash-card">
       <div class="dash-card-title">Entradas por mês</div>
       ${meses.length?`<div class="meses-grid">
@@ -661,6 +840,8 @@ function renderPipeline(){
             <div class="meta-item"><span class="meta-lbl">Telefone</span><span class="meta-val blue">${esc(l.tel||'—')}</span></div>
             <div class="meta-item" style="grid-column:1/-1"><span class="meta-lbl">Última interação</span><span class="meta-val">${last?esc(last.substring(0,65))+(last.length>65?'…':''):'Nenhuma ainda'}</span></div>
           </div>
+          ${tempoBadge(l)}
+          ${followupBadge(l.followup)}
         </div>
       </div>`;
     });
@@ -720,8 +901,8 @@ function initDragDrop(){
       if(!id) return;
       const l=(window._leads||{})[id];
       if(!l||l.etapa===etapa) return;
-      window._update(id,{etapa});
-      toast(`Movido para "${ELBL[etapa]}" ✓`,'green');
+      /* Abre popup pedindo motivo */
+      abrirPopupMover(id, l.etapa, etapa);
     });
   });
 }
@@ -785,6 +966,7 @@ function abrirLead(id){
   document.getElementById('f-cidade').value=l.cidade||'';
   document.getElementById('f-obs').value=l.obs||'';
   document.getElementById('f-produto').value=l.produto||'';
+  document.getElementById('f-followup').value=l.followup||'';
   document.getElementById('mTitulo').textContent=l.nome;
   document.getElementById('mSub').textContent=l.empresa||'Lead';
   document.getElementById('btnDel').style.display='';
@@ -866,23 +1048,58 @@ function checkDuplic(){
 function hideDuplic(){document.getElementById('duplicBox').classList.remove('show');}
 
 /* HIST */
+const TIPO_LBL={whatsapp:'WhatsApp',ligacao:'Ligação',email:'E-mail',reuniao:'Reunião',outro:'Outro'};
+const TIPO_ICON={whatsapp:'💬',ligacao:'📞',email:'✉',reuniao:'🤝',outro:'·'};
+const RET_LBL={sim:'Houve retorno',nao:'Sem retorno',aguardando:'Aguardando'};
+let _hTipo='whatsapp', _hRet='aguardando';
+
+function setHTipo(t){
+  _hTipo=t;
+  document.querySelectorAll('.hbtn').forEach(b=>{
+    b.className='hbtn'+(b.dataset.tipo===t?' active-'+t:'');
+  });
+}
+function setHRet(r){
+  _hRet=r;
+  document.querySelectorAll('.rbtn').forEach(b=>{
+    b.className='rbtn'+(b.dataset.ret===r?' active-'+r:'');
+  });
+}
+
 function renderHist(hist){
   const el=document.getElementById('histList');
-  if(!hist.length){el.innerHTML='<div class="hist-empty">Nenhuma interação registrada ainda.</div>';return;}
-  el.innerHTML=hist.slice().reverse().map(h=>`
-    <div class="hist-item"><div class="hist-dot"></div>
-      <div class="hist-ts">${new Date(h.ts).toLocaleString('pt-BR')}</div>
-      <div class="hist-txt">${esc(h.texto)}</div>
-    </div>`).join('');
+  if(!hist||!hist.length){
+    el.innerHTML='<div class="hist-empty">Nenhuma interação registrada ainda.</div>';
+    return;
+  }
+  el.innerHTML=hist.slice().reverse().map(h=>{
+    const tipo=h.tipo||'outro';
+    const ret =h.retorno||'aguardando';
+    const retCls={sim:'ret-sim',nao:'ret-nao',aguardando:'ret-aguard'}[ret]||'ret-aguard';
+    const retLbl=RET_LBL[ret]||ret;
+    return`<div class="hist-item">
+      <div class="hist-dot tipo-${tipo}"></div>
+      <div class="hist-header">
+        <span class="hist-tipo-badge hbadge-${tipo}">${TIPO_ICON[tipo]||''} ${TIPO_LBL[tipo]||tipo}</span>
+        <span class="hist-retorno ${retCls}">${retLbl}</span>
+        <span class="hist-ts">${new Date(h.ts).toLocaleString('pt-BR')}</span>
+      </div>
+      ${h.texto?`<div class="hist-txt">${esc(h.texto)}</div>`:''}
+    </div>`;
+  }).join('');
 }
+
 function addHist(){
   const txt=document.getElementById('histInput').value.trim();
-  if(!txt||!_id)return;
+  if(!_id){toast('Salve o lead primeiro.');return;}
   const l=(window._leads||{})[_id];
-  const hist=[...(l.historico||[]),{ts:Date.now(),texto:txt}];
+  const entrada={ts:Date.now(),tipo:_hTipo,retorno:_hRet,texto:txt};
+  const hist=[...(l.historico||[]),entrada];
   window._update(_id,{historico:hist});
   document.getElementById('histInput').value='';
-  toast('Interação registrada ✓');
+  // reset retorno para aguardando
+  setHRet('aguardando');
+  toast('Interação registrada ✓','green');
 }
 
 /* SALVAR */
@@ -898,7 +1115,9 @@ function salvarLead(){
     cidade: document.getElementById('f-cidade').value.trim(),
     produto:document.getElementById('f-produto').value,
     obs:    document.getElementById('f-obs').value.trim(),
+    followup:document.getElementById('f-followup').value||null,
     data:_id?((window._leads||{})[_id]?.data||Date.now()):Date.now(),
+    etapaSince:_id&&(window._leads||{})[_id]?.etapa===etapaFinal?((window._leads||{})[_id]?.etapaSince||Date.now()):Date.now(),
   };
   if(_id){
     data.historico=(window._leads||{})[_id]?.historico||[];
@@ -1041,16 +1260,119 @@ function toast(msg,type=''){
 function switchView(v,btn){
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.view').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
+  if(btn) btn.classList.add('active');
   document.getElementById('view-'+v).classList.add('active');
   if(v==='lista')renderLista();
   if(v==='dashboard')renderDashboard();
 }
 
+/* ═══ LOGIN LOCAL (sem Firebase Auth) ═══ */
+const USUARIOS={
+  'admin': {senha:'2725', nome:'Admin',    papel:'admin'},
+  'user':  {senha:'2725', nome:'Usuário',  papel:'user'},
+};
+
+function fazerLogin(){
+  const usuario=document.getElementById('loginUser').value.trim().toLowerCase();
+  const senha  =document.getElementById('loginSenha').value;
+  const erro   =document.getElementById('loginErro');
+  const btn    =document.getElementById('loginBtn');
+  erro.style.display='none';
+
+  const perfil=USUARIOS[usuario];
+  if(!perfil||perfil.senha!==senha){
+    erro.textContent='Usuário ou senha incorretos.';
+    erro.style.display='block';
+    document.getElementById('loginSenha').value='';
+    return;
+  }
+
+  /* Login OK — guarda sessão e mostra app */
+  window._user={usuario,nome:perfil.nome,papel:perfil.papel};
+  sessionStorage.setItem('crm_user',JSON.stringify(window._user));
+  mostrarApp();
+}
+
+function mostrarApp(){
+  const u=window._user;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('appScreen').style.display='block';
+  document.getElementById('userNome').textContent=u.nome;
+  document.getElementById('userPapel').textContent=u.papel==='admin'?'Admin':'Usuário';
+  /* user comum não vê aba Pipeline (só comercial e admin) */
+  aplicarPermissoes(u.papel);
+  renderAll();
+}
+
+function aplicarPermissoes(papel){
+  if(papel==='user'){
+    /* user vê tudo, mas não pode excluir */
+    document.querySelectorAll('.tab-comercial').forEach(t=>t.style.display='');
+  }
+}
+
+function fazerLogout(){
+  if(!confirm('Deseja sair do CRM?'))return;
+  sessionStorage.removeItem('crm_user');
+  window._user=null;
+  document.getElementById('appScreen').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginSenha').value='';
+  document.getElementById('loginErro').style.display='none';
+}
+
+/* ═══ FOLLOW-UP ═══ */
+function diasAte(dataStr){
+  if(!dataStr) return null;
+  const hoje=new Date(); hoje.setHours(0,0,0,0);
+  const alvo=new Date(dataStr+'T00:00:00');
+  return Math.round((alvo-hoje)/(1000*60*60*24));
+}
+
+function followupBadge(dataStr){
+  if(!dataStr) return '';
+  const d=diasAte(dataStr);
+  if(d===null) return '';
+  const fmt=new Date(dataStr+'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  if(d<0)  return`<div class="fu-badge fu-atrasado">⚠ Follow-up atrasado ${Math.abs(d)}d · ${fmt}</div>`;
+  if(d===0)return`<div class="fu-badge fu-hoje">🔔 Follow-up hoje · ${fmt}</div>`;
+  if(d<=2) return`<div class="fu-badge fu-breve">📅 Follow-up em ${d}d · ${fmt}</div>`;
+  return`<div class="fu-badge fu-futuro">📅 ${fmt}</div>`;
+}
+
+/* ═══ TEMPO NO PIPELINE ═══ */
+const ALERTA_DIAS=3;
+function diasNaEtapa(lead){
+  /* usa a data da última mudança de etapa se existir, senão data de entrada */
+  const base=lead.etapaSince||lead.data||Date.now();
+  return Math.floor((Date.now()-base)/(1000*60*60*24));
+}
+function tempoBadge(lead){
+  if(lead.etapa==='ganho'||lead.etapa==='perdido'||lead.qual==='frio') return '';
+  const d=diasNaEtapa(lead);
+  if(d>=ALERTA_DIAS) return`<div class="tempo-badge tempo-alerta">⏱ ${d}d nesta etapa</div>`;
+  if(d>0) return`<div class="tempo-badge tempo-ok">${d}d nesta etapa</div>`;
+  return'';
+}
+
 document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))fecharModal();});
 document.getElementById('modalImport').addEventListener('click',e=>{if(e.target===document.getElementById('modalImport'))fecharImport();});
 
-window.addEventListener('DOMContentLoaded',()=>{window._leads={};buildGrids();renderDashboard();});
+window.addEventListener('DOMContentLoaded',()=>{
+  window._leads={};
+  buildGrids();
+  /* Restaura sessão se ainda estiver ativa */
+  const saved=sessionStorage.getItem('crm_user');
+  if(saved){
+    try{
+      window._user=JSON.parse(saved);
+      mostrarApp();
+    }catch(e){
+      sessionStorage.removeItem('crm_user');
+    }
+  }
+});
 
 window.abrirNovo=abrirNovo;window.abrirLead=abrirLead;window.fecharModal=fecharModal;
 window.mTab=mTab;window.switchView=switchView;window.setQual=setQual;window.setEtapa=setEtapa;
@@ -1059,6 +1381,110 @@ window.renderLista=renderLista;window.checkDuplic=checkDuplic;
 window.abrirImport=abrirImport;window.fecharImport=fecharImport;
 window.dragOver=dragOver;window.dragLeave=dragLeave;window.dropFile=dropFile;
 window.processCSV=processCSV;window.confirmarImport=confirmarImport;
+window.setHTipo=setHTipo;window.setHRet=setHRet;
+/* ═══ POPUP MOVER ETAPA ═══ */
+let _moverPendente=null; // {id, etapaOrigem, etapaDestino}
+
+const SUGESTOES_ETAPA={
+  contato: ['Primeiro contato realizado','Enviou mensagem no WhatsApp','Ligação atendida','Agendou conversa'],
+  proposta:['Proposta enviada por e-mail','Proposta enviada por WhatsApp','Cliente pediu orçamento','Enviou ficha técnica'],
+  negociacao:['Cliente analisando proposta','Negociando valores','Aguardando aprovação interna','Contraproposta recebida'],
+  ganho:   ['Pedido confirmado','Contrato assinado','Pagamento realizado','Cliente aprovou proposta'],
+  perdido: ['Sem retorno após tentativas','Cliente escolheu concorrente','Preço fora do orçamento','Projeto cancelado pelo cliente'],
+};
+
+function abrirPopupMover(id, etapaOrigem, etapaDestino){
+  _moverPendente={id,etapaOrigem,etapaDestino};
+  const l=(window._leads||{})[id];
+  document.getElementById('moverTitulo').textContent=`Movendo: ${l?.nome||'lead'}`;
+  document.getElementById('moverSub').innerHTML=
+    `<span style="color:var(--muted)">${ELBL[etapaOrigem]||etapaOrigem}</span>
+     <span style="margin:0 6px;color:var(--green)">→</span>
+     <span style="color:var(--green);font-weight:600">${ELBL[etapaDestino]||etapaDestino}</span>`;
+  document.getElementById('moverObs').value='';
+  /* Sugestões para a etapa destino */
+  const sugs=SUGESTOES_ETAPA[etapaDestino]||[];
+  document.getElementById('moverSugestoes').innerHTML=sugs.map(s=>
+    `<button onclick="usarSugestao(this)" style="padding:5px 12px;border:1.5px solid var(--border);border-radius:20px;background:var(--white);font-family:'Poppins',sans-serif;font-size:0.68rem;cursor:pointer;color:var(--text2);transition:all 0.15s;"
+      onmouseover="this.style.borderColor='var(--green)';this.style.color='var(--green)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">${s}</button>`
+  ).join('');
+  document.getElementById('modalMover').classList.add('open');
+  setTimeout(()=>document.getElementById('moverObs').focus(),80);
+}
+
+function usarSugestao(btn){
+  document.getElementById('moverObs').value=btn.textContent;
+  /* Destaca o selecionado */
+  document.querySelectorAll('#moverSugestoes button').forEach(b=>{
+    b.style.background='var(--white)';b.style.borderColor='var(--border)';b.style.color='var(--text2)';
+  });
+  btn.style.background='var(--green-l)';btn.style.borderColor='var(--green)';btn.style.color='var(--green)';
+}
+
+function confirmarMover(){
+  if(!_moverPendente) return;
+  const {id,etapaOrigem,etapaDestino}=_moverPendente;
+  const obs=document.getElementById('moverObs').value.trim();
+  const l=(window._leads||{})[id];
+  /* Registra no histórico automaticamente */
+  const usuario=window._user?.nome||'Usuário';
+  const textoHist=obs
+    ? `[${ELBL[etapaDestino]}] ${obs}`
+    : `Movido de "${ELBL[etapaOrigem]}" para "${ELBL[etapaDestino]}"`;
+  const hist=[...(l?.historico||[]),{
+    ts:Date.now(),
+    tipo:'outro',
+    retorno:'aguardando',
+    texto:textoHist,
+    autor:usuario,
+    etapaMov:{de:etapaOrigem,para:etapaDestino}
+  }];
+  window._update(id,{etapa:etapaDestino,etapaSince:Date.now(),historico:hist});
+  document.getElementById('modalMover').classList.remove('open');
+  _moverPendente=null;
+  toast(`Movido para "${ELBL[etapaDestino]}" ✓`,'green');
+}
+
+function cancelarMover(){
+  document.getElementById('modalMover').classList.remove('open');
+  _moverPendente=null;
+}
+
+window.usarSugestao=usarSugestao;
+window.confirmarMover=confirmarMover;
+window.cancelarMover=cancelarMover;
+window.abrirPopupMover=abrirPopupMover;
 </script>
+<!-- ═══ MODAL MOVER ETAPA ═══ -->
+<div class="modal-bg" id="modalMover">
+<div class="modal" style="width:440px">
+  <div class="modal-head">
+    <div class="modal-title" id="moverTitulo">Movendo card</div>
+    <div class="modal-sub" id="moverSub">Registre o motivo da movimentação</div>
+    <div style="height:14px"></div>
+  </div>
+  <div class="modal-body" style="padding-top:16px">
+    <!-- Sugestões rápidas -->
+    <div style="font-size:0.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Sugestões rápidas</div>
+    <div id="moverSugestoes" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px"></div>
+    <!-- Campo livre -->
+    <div class="fld">
+      <label>Observação (opcional)</label>
+      <textarea id="moverObs" rows="3" placeholder="Detalhe o que aconteceu nesta etapa..."></textarea>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <div>
+      <button class="btn-cancel" onclick="cancelarMover()">Cancelar</button>
+    </div>
+    <div>
+      <button class="btn-save" onclick="confirmarMover()">Confirmar movimentação</button>
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- fim appScreen -->
 </body>
 </html>
