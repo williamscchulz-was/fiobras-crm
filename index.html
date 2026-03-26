@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiobras · CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#008835;--green2:#006828;--green-l:#e8f5ed;--green-ll:#f2faf5;
+  --blue:#0076BE;--blue-l:#e6f1fb;
+  --yellow:#FFCB00;--yellow-l:#fffbea;
+  --red:#d63030;--red-l:#fdf0f0;
+  --orange:#d4620a;--orange-l:#fff3e8;
+  --purple:#6b35b8;--purple-l:#f3eeff;
+  --gray:#f5f6f5;--gray2:#eaece9;--gray3:#c8cdc9;
+  --muted:#6b7a6e;--text:#1a2e1e;--text2:#3e5444;
+  --border:#dde4de;--white:#ffffff;--radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#f0f4f1;font-family:'Poppins',sans-serif;font-weight:400;color:var(--text);min-height:100vh;}
+
+/* HEADER */
+.header{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-text{font-size:1.2rem;font-weight:700;color:var(--green);}
+.logo-crm{font-size:0.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);font-weight:500;margin-top:1px;}
+.btn-primary{display:flex;align-items:center;gap:7px;background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-family:'Poppins',sans-serif;font-size:0.72rem;font-weight:600;cursor:pointer;transition:background 0.18s;letter-spacing:0.3px;}
+.btn-primary:hover{background:var(--green2);}
+
+/* TABS */
+.tabs{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;display:flex;}
+.tab{padding:13px 20px;background:none;border:none;border-bottom:2.5px solid transparent;color:var(--muted);font-family:'Poppins',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.18s;margin-bottom:-1px;white-space:nowrap;}
+.tab:hover{color:var(--green);}
+.tab.active{color:var(--green);border-bottom-color:var(--green);}
+.tab-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--green-l);color:var(--green);border-radius:20px;font-size:0.58rem;font-weight:700;min-width:18px;height:18px;padding:0 5px;margin-left:6px;}
+
+.view{display:none;}
+.view.active{display:block;}
+
+/* STATS */
+.stats-bar{display:flex;gap:12px;padding:20px 28px 8px;flex-wrap:wrap;}
+.stat{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;flex:1;min-width:110px;}
+.stat-lbl{font-size:0.58rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:5px;}
+.stat-val{font-family:'DM Mono',monospace;font-size:1.8rem;font-weight:500;line-height:1;}
+.stat.s-red   .stat-val{color:var(--orange);}
+.stat.s-blue  .stat-val{color:var(--blue);}
+.stat.s-green .stat-val{color:var(--green);}
+.stat.s-gray  .stat-val{color:var(--gray3);}
+
+/* KANBAN */
+.kanban-info{display:flex;align-items:center;gap:8px;padding:12px 28px 0;}
+.ki-badge{background:var(--orange-l);color:var(--orange);border:1px solid #f0c090;border-radius:5px;font-size:0.62rem;font-weight:600;padding:3px 9px;}
+.ki-text{font-size:0.7rem;color:var(--muted);}
+.pipeline-wrap{padding:14px 28px 48px;overflow-x:auto;}
+.pipeline{display:flex;gap:14px;min-width:max-content;align-items:flex-start;}
+.col{background:var(--gray);border:1px solid var(--gray2);border-radius:12px;width:272px;flex-shrink:0;}
+.col-head{padding:14px 16px 8px;display:flex;align-items:center;justify-content:space-between;}
+.col-name{font-size:0.65rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;}
+.col-cnt{font-family:'DM Mono',monospace;font-size:0.68rem;background:rgba(0,0,0,0.07);color:var(--muted);border-radius:20px;padding:2px 9px;}
+.col-bar{height:3px;margin:0 16px 2px;border-radius:3px;}
+.col-cards{padding:8px;min-height:80px;display:flex;flex-direction:column;gap:8px;}
+.empty-col{text-align:center;padding:24px 10px;font-size:0.7rem;color:var(--gray3);}
+.col-contato  .col-name{color:#0b4a7a;} .col-contato  .col-bar{background:var(--blue);}
+.col-proposta .col-name{color:#6b4a00;} .col-proposta .col-bar{background:var(--yellow);}
+.col-negoc    .col-name{color:#4a1f80;} .col-negoc    .col-bar{background:var(--purple);}
+.col-ganho    .col-name{color:#0a4a20;} .col-ganho    .col-bar{background:var(--green);}
+.col-perdido  .col-name{color:var(--muted);} .col-perdido .col-bar{background:var(--gray3);}
+
+/* CARD */
+.card{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:13px 14px;cursor:pointer;transition:box-shadow 0.18s,border-color 0.18s;}
+.card:hover{box-shadow:0 2px 14px rgba(0,100,40,0.12);border-color:var(--green);}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:4px;}
+.card-name{font-size:0.83rem;font-weight:700;color:var(--text);line-height:1.3;}
+.badge-quente{display:inline-flex;align-items:center;font-size:0.58rem;font-weight:700;border-radius:4px;padding:2px 8px;background:#fff0e6;color:#c05000;border:1px solid #f8c99a;flex-shrink:0;text-transform:uppercase;}
+.card-empresa{font-size:0.7rem;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.card-produto{display:inline-flex;font-size:0.62rem;font-weight:600;background:var(--green-l);color:var(--green2);border-radius:4px;padding:2px 8px;margin-bottom:9px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.card-meta{display:grid;grid-template-columns:1fr 1fr;gap:5px;border-top:1px solid var(--gray2);padding-top:9px;}
+.meta-item{display:flex;flex-direction:column;gap:1px;}
+.meta-lbl{font-size:0.54rem;letter-spacing:0.8px;text-transform:uppercase;color:var(--gray3);font-weight:600;}
+.meta-val{font-size:0.67rem;color:var(--text2);font-family:'DM Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.meta-val.blue{color:var(--blue);}
+.card-com{display:inline-flex;align-items:center;gap:4px;background:var(--blue-l);color:var(--blue);border:1px solid #9cc8f0;border-radius:4px;font-size:0.58rem;font-weight:700;padding:2px 7px;margin-top:7px;text-transform:uppercase;}
+
+/* LISTA */
+.lista-wrap{padding:16px 28px 48px;}
+.lista-filters{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.fi{padding:8px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.75rem;background:var(--white);color:var(--text);outline:none;cursor:pointer;transition:border-color 0.18s;}
+.fi:focus{border-color:var(--green);}
+input.fi{min-width:200px;}
+.table-wrap{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:0.58rem;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);padding:11px 16px;text-align:left;background:var(--gray);border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:11px 16px;font-size:0.78rem;border-bottom:1px solid var(--gray2);color:var(--text);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--green-ll);cursor:pointer;}
+
+/* BADGES ETAPA */
+.ep{display:inline-flex;font-size:0.6rem;font-weight:700;border-radius:5px;padding:3px 8px;text-transform:uppercase;letter-spacing:0.3px;}
+.ep-contato {background:var(--blue-l);color:#0a3d6e;}
+.ep-proposta{background:var(--yellow-l);color:#6b4a00;}
+.ep-negoc   {background:var(--purple-l);color:#4a1f80;}
+.ep-ganho   {background:var(--green-l);color:#0a4a20;}
+.ep-perdido {background:var(--gray2);color:var(--muted);}
+.ep-frio    {background:var(--gray2);color:var(--muted);}
+
+/* ══════════════════════ RELATÓRIO ══════════════════════ */
+.relatorio-wrap{padding:20px 28px 60px;}
+.rel-section{margin-bottom:32px;}
+.rel-section-title{font-size:0.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.rel-section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:28px;}
+.kpi{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
+.kpi-lbl{font-size:0.58rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.kpi-val{font-family:'DM Mono',monospace;font-size:2rem;font-weight:500;line-height:1;margin-bottom:4px;}
+.kpi-sub{font-size:0.68rem;color:var(--muted);}
+.kpi.k-orange .kpi-val{color:var(--orange);}
+.kpi.k-green  .kpi-val{color:var(--green);}
+.kpi.k-blue   .kpi-val{color:var(--blue);}
+.kpi.k-gray   .kpi-val{color:var(--gray3);}
+.kpi.k-purple .kpi-val{color:var(--purple);}
+
+/* FUNIL */
+.funil{display:flex;flex-direction:column;gap:6px;max-width:560px;}
+.funil-row{display:flex;align-items:center;gap:12px;}
+.funil-label{font-size:0.72rem;font-weight:500;color:var(--text2);min-width:150px;text-align:right;}
+.funil-bar-wrap{flex:1;background:var(--gray2);border-radius:6px;height:32px;overflow:hidden;}
+.funil-bar{height:100%;border-radius:6px;display:flex;align-items:center;padding:0 12px;transition:width 0.6s ease;}
+.funil-bar span{font-family:'DM Mono',monospace;font-size:0.72rem;font-weight:500;color:#fff;white-space:nowrap;}
+.funil-pct{font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--muted);min-width:44px;}
+
+/* PRODUTO TABLE */
+.prod-table{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.prod-table table{width:100%;}
+.prod-table th{font-size:0.58rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);padding:10px 16px;background:var(--gray);border-bottom:1px solid var(--border);}
+.prod-table td{padding:10px 16px;font-size:0.8rem;border-bottom:1px solid var(--gray2);}
+.prod-table tr:last-child td{border-bottom:none;}
+.bar-inline{display:inline-block;height:6px;border-radius:3px;background:var(--green);margin-right:8px;vertical-align:middle;}
+
+/* MENSAL */
+.mensal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;}
+.mes-col{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 10px;text-align:center;}
+.mes-nome{font-size:0.6rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.mes-val{font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:500;color:var(--text);line-height:1;margin-bottom:2px;}
+.mes-quente{font-size:0.62rem;color:var(--orange);}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(10,30,14,0.5);z-index:500;align-items:center;justify-content:center;padding:16px;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--white);border-radius:14px;width:580px;max-width:100%;box-shadow:0 24px 80px rgba(0,60,20,0.18);max-height:92vh;display:flex;flex-direction:column;}
+.modal-head{padding:22px 26px 0;flex-shrink:0;}
+.modal-title{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:2px;}
+.modal-sub{font-size:0.72rem;color:var(--muted);margin-bottom:14px;}
+.modal-tabs{display:flex;border-bottom:1px solid var(--border);}
+.mtab{padding:10px 18px;background:none;border:none;border-bottom:2px solid transparent;font-family:'Poppins',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;margin-bottom:-1px;transition:all 0.15s;}
+.mtab:hover{color:var(--green);}
+.mtab.active{color:var(--green);border-bottom-color:var(--green);}
+.modal-body{padding:22px 26px;overflow-y:auto;flex:1;}
+.mpanel{display:none;}
+.mpanel.active{display:block;}
+
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.fg1{display:grid;grid-template-columns:1fr;gap:13px;}
+@media(max-width:520px){.fg2{grid-template-columns:1fr;}}
+.fld{display:flex;flex-direction:column;gap:5px;}
+.fld label{font-size:0.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.fld input,.fld select,.fld textarea{padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.82rem;color:var(--text);background:var(--white);outline:none;transition:border-color 0.18s;}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--green);}
+.fld textarea{resize:vertical;min-height:68px;}
+
+/* QUAL QUENTE/FRIO */
+.qual-row{display:flex;gap:8px;}
+.qbtn{flex:1;padding:12px 8px;border:1.5px solid var(--border);border-radius:8px;background:var(--white);font-family:'Poppins',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.15s;text-align:center;color:var(--muted);}
+.qbtn.q-frio.sel   {background:var(--blue-l);border-color:var(--blue);color:#0a3d6e;}
+.qbtn.q-quente.sel {background:var(--orange-l);border-color:var(--orange);color:var(--orange);}
+
+.nota{background:var(--green-l);border:1px solid #b2dfbe;border-radius:8px;padding:10px 14px;font-size:0.72rem;color:var(--green2);margin-bottom:16px;display:flex;align-items:center;gap:8px;line-height:1.5;}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color 0.18s;}
+.toggle-row.on{border-color:var(--blue);background:var(--blue-l);}
+.sw{width:40px;height:22px;background:var(--gray2);border-radius:22px;position:relative;transition:background 0.2s;flex-shrink:0;}
+.sw.on{background:var(--blue);}
+.sw-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.15);}
+.sw.on .sw-thumb{left:21px;}
+.toggle-lbl{font-size:0.8rem;font-weight:500;color:var(--muted);}
+.toggle-row.on .toggle-lbl{color:var(--blue);}
+
+/* ETAPA GRID */
+.etapa-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.ebtn{padding:10px 8px;border:1.5px solid var(--border);border-radius:8px;background:var(--white);font-family:'Poppins',sans-serif;font-size:0.68rem;font-weight:600;cursor:pointer;text-align:center;color:var(--muted);transition:all 0.15s;}
+.ebtn:hover{border-color:var(--green);color:var(--green);}
+.ebtn.active{background:var(--green);border-color:var(--green);color:#fff;}
+
+/* HIST */
+.hist-list{display:flex;flex-direction:column;}
+.hist-item{border-left:2px solid var(--border);padding:0 0 16px 18px;margin-left:6px;position:relative;}
+.hist-item:last-child{padding-bottom:0;}
+.hist-dot{position:absolute;left:-5px;top:5px;width:8px;height:8px;border-radius:50%;background:var(--green);border:2px solid var(--white);}
+.hist-ts{font-size:0.6rem;color:var(--gray3);font-family:'DM Mono',monospace;margin-bottom:3px;}
+.hist-txt{font-size:0.78rem;color:var(--text2);line-height:1.5;}
+.hist-empty{font-size:0.75rem;color:var(--gray3);padding:8px 0;}
+.hist-add{display:flex;gap:8px;margin-top:18px;}
+.hist-add input{flex:1;padding:9px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.78rem;outline:none;color:var(--text);}
+.hist-add input:focus{border-color:var(--green);}
+.hist-add button{padding:9px 16px;background:var(--green);color:#fff;border:none;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.72rem;font-weight:600;cursor:pointer;white-space:nowrap;}
+.hist-add button:hover{background:var(--green2);}
+
+/* MODAL FOOTER */
+.modal-foot{padding:14px 26px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.btn-del{padding:8px 16px;background:var(--white);border:1.5px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.7rem;font-weight:600;color:var(--red);cursor:pointer;transition:all 0.15s;}
+.btn-del:hover{background:var(--red-l);border-color:var(--red);}
+.btn-cancel{padding:8px 18px;background:var(--white);border:1.5px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.7rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+.btn-cancel:hover{border-color:var(--green);color:var(--green);}
+.btn-save{padding:8px 22px;background:var(--green);border:none;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.7rem;font-weight:600;color:#fff;cursor:pointer;transition:background 0.18s;}
+.btn-save:hover{background:var(--green2);}
+
+.toast{position:fixed;bottom:28px;right:28px;background:var(--text);color:#fff;padding:11px 20px;border-radius:9px;font-size:0.78rem;font-weight:500;z-index:9999;opacity:0;transition:opacity 0.25s;pointer-events:none;}
+.toast.show{opacity:1;}
+
+@media(max-width:700px){
+  .stats-bar,.pipeline-wrap,.lista-wrap,.kanban-info,.relatorio-wrap{padding-left:14px;padding-right:14px;}
+  .header,.tabs{padding-left:14px;padding-right:14px;}
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  table th:nth-child(5),table td:nth-child(5),table th:nth-child(6),table td:nth-child(6){display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <svg width="30" height="30" viewBox="0 0 40 40" fill="none">
+      <path d="M6 26 Q10 14 18 10 Q24 7 30 12" stroke="#0076BE" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path d="M6 32 Q12 20 22 16 Q28 13 34 18" stroke="#0076BE" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path d="M22 8 Q28 8 32 14 Q34 20 30 26 Q26 32 20 32" stroke="#008835" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path d="M26 6 Q30 6 32 10" stroke="#FFCB00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="logo-text">Fiobras</div>
+      <div class="logo-crm">CRM de Vendas</div>
+    </div>
+  </div>
+  <button class="btn-primary" onclick="abrirNovo()">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+    Registrar Lead
+  </button>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchView('pipeline',this)">Pipeline <span class="tab-badge" id="badge-pipeline">0</span></button>
+  <button class="tab" onclick="switchView('lista',this)">Banco de Leads <span class="tab-badge" id="badge-lista" style="background:var(--gray2);color:var(--muted)">0</span></button>
+  <button class="tab" onclick="switchView('relatorio',this)">Relatório</button>
+</div>
+
+<div class="stats-bar" id="statsBar"></div>
+
+<!-- ══════════ PIPELINE ══════════ -->
+<div class="view active" id="view-pipeline">
+  <div class="kanban-info">
+    <span class="ki-badge">🔥 Apenas leads Quentes</span>
+    <span class="ki-text">Leads frios ficam no Banco de Leads.</span>
+  </div>
+  <div class="pipeline-wrap">
+    <div class="pipeline" id="pipeline"></div>
+  </div>
+</div>
+
+<!-- ══════════ LISTA ══════════ -->
+<div class="view" id="view-lista">
+  <div class="lista-wrap">
+    <div class="lista-filters">
+      <input class="fi" type="text" id="busca" placeholder="Buscar nome, empresa, telefone..." oninput="renderLista()">
+      <select class="fi" id="fEtapa" onchange="renderLista()">
+        <option value="">Todas as etapas</option>
+        <option value="contato">Contato feito</option>
+        <option value="proposta">Proposta enviada</option>
+        <option value="negociacao">Em negociação</option>
+        <option value="ganho">Fechado/Ganho</option>
+        <option value="perdido">Perdido</option>
+        <option value="frio">Frio (banco)</option>
+      </select>
+      <select class="fi" id="fQual" onchange="renderLista()">
+        <option value="">Todos</option>
+        <option value="quente">🔥 Quente</option>
+        <option value="frio">❄ Frio</option>
+      </select>
+      <select class="fi" id="fCom" onchange="renderLista()">
+        <option value="">Todos</option>
+        <option value="sim">No comercial</option>
+        <option value="nao">Não no comercial</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Nome</th><th>Empresa</th><th>Produto</th>
+          <th>Qualif.</th><th>Etapa</th><th>Comercial</th><th>Entrada</th>
+        </tr></thead>
+        <tbody id="tBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ RELATÓRIO ══════════ -->
+<div class="view" id="view-relatorio">
+  <div class="relatorio-wrap" id="relatorioWrap"></div>
+</div>
+
+<!-- ══════════ MODAL ══════════ -->
+<div class="modal-bg" id="modal">
+<div class="modal">
+  <div class="modal-head">
+    <div class="modal-title" id="mTitulo">Registrar Lead</div>
+    <div class="modal-sub"   id="mSub">Preencha os dados do contato</div>
+    <div class="modal-tabs">
+      <button class="mtab active" onclick="mTab('dados',this)">Dados</button>
+      <button class="mtab" id="mt-pipeline" onclick="mTab('pipeline',this)" style="display:none">Pipeline</button>
+      <button class="mtab" id="mt-hist"     onclick="mTab('historico',this)" style="display:none">Histórico</button>
+    </div>
+  </div>
+  <div class="modal-body">
+
+    <!-- DADOS -->
+    <div class="mpanel active" id="mp-dados">
+      <div class="nota">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#008835" stroke-width="1.5"/><path d="M8 7v4M8 5v.5" stroke="#008835" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Lead <strong>🔥 Quente</strong> entra direto no Pipeline do comercial. <strong>❄ Frio</strong> fica no banco de leads.
+      </div>
+      <div class="fg2">
+        <div class="fld"><label>Nome *</label><input type="text" id="f-nome" placeholder="Nome do contato"></div>
+        <div class="fld"><label>Empresa</label><input type="text" id="f-empresa" placeholder="Razão social"></div>
+        <div class="fld"><label>Telefone / WhatsApp</label><input type="text" id="f-tel" placeholder="(41) 99999-0000"></div>
+        <div class="fld"><label>E-mail</label><input type="email" id="f-email" placeholder="contato@empresa.com.br"></div>
+        <div class="fld"><label>Cidade / Estado</label><input type="text" id="f-cidade" placeholder="Curitiba / PR"></div>
+        <div class="fld"><label>Produto de interesse</label>
+          <select id="f-produto">
+            <option value="">Selecione...</option>
+            <option>Tingimento de fios</option>
+            <option>Retorção</option>
+            <option>Preparação</option>
+            <option>Fios tintos (venda)</option>
+            <option>Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg1" style="margin-top:14px">
+        <div class="fld">
+          <label>Qualificação *</label>
+          <div class="qual-row">
+            <button class="qbtn q-frio sel" onclick="setQual('frio')">❄ Frio — banco de leads</button>
+            <button class="qbtn q-quente"   onclick="setQual('quente')">🔥 Quente — pipeline</button>
+          </div>
+        </div>
+        <div class="fld" style="margin-top:2px">
+          <label>Observações</label>
+          <textarea id="f-obs" placeholder="Contexto da conversa, necessidades, detalhes..."></textarea>
+        </div>
+        <div class="fld">
+          <label>Passou para o comercial?</label>
+          <div class="toggle-row" id="toggleRow" onclick="toggleCom()">
+            <div class="sw" id="sw"><div class="sw-thumb"></div></div>
+            <span class="toggle-lbl" id="swLbl">Não</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIPELINE -->
+    <div class="mpanel" id="mp-pipeline">
+      <div class="fld" style="margin-bottom:18px">
+        <label>Mover para etapa</label>
+        <div class="etapa-grid" id="etapaGrid"></div>
+      </div>
+      <div class="fld" style="margin-bottom:18px">
+        <label>Qualificação</label>
+        <div class="qual-row">
+          <button class="qbtn q-frio"   onclick="setQual('frio')">❄ Frio — banco de leads</button>
+          <button class="qbtn q-quente" onclick="setQual('quente')">🔥 Quente — pipeline</button>
+        </div>
+      </div>
+      <div class="fld">
+        <label>Passou para o comercial?</label>
+        <div class="toggle-row" id="toggleRow2" onclick="toggleCom()">
+          <div class="sw" id="sw2"><div class="sw-thumb"></div></div>
+          <span class="toggle-lbl" id="swLbl2">Não</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div class="mpanel" id="mp-historico">
+      <div class="hist-list" id="histList"></div>
+      <div class="hist-add">
+        <input type="text" id="histInput" placeholder="Ex: Ligação realizada — aguarda proposta...">
+        <button onclick="addHist()">+ Registrar</button>
+      </div>
+    </div>
+
+  </div>
+  <div class="modal-foot">
+    <div><button class="btn-del" id="btnDel" style="display:none" onclick="deletarLead()">Excluir lead</button></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-save" onclick="salvarLead()">Salvar</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE -->
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getDatabase,ref,onValue,push,update,remove}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+const db=getDatabase(initializeApp({
+  apiKey:"AIzaSyCv2YsaTAj38o55M8nBbZ_3s939XWLAmM4",
+  authDomain:"fiobras-preco.firebaseapp.com",
+  databaseURL:"https://fiobras-preco-default-rtdb.firebaseio.com",
+  projectId:"fiobras-preco",
+  storageBucket:"fiobras-preco.firebasestorage.app",
+  messagingSenderId:"828256608601",
+  appId:"1:828256608601:web:8e73fde16eaa9ad5882c48"
+}));
+const lr=ref(db,'crm/leads');
+onValue(lr,s=>{window._leads=s.val()||{};window.renderAll&&window.renderAll();});
+window._push  =d=>push(lr,d);
+window._update=(id,d)=>update(ref(db,'crm/leads/'+id),d);
+window._remove=id=>remove(ref(db,'crm/leads/'+id));
+</script>
+
+<script>
+let _id=null,_qual='frio',_etapa='contato',_com=false;
+
+const ETAPAS=[
+  {key:'contato',  label:'Contato feito'},
+  {key:'proposta', label:'Proposta enviada'},
+  {key:'negociacao',label:'Em negociação'},
+  {key:'ganho',    label:'Fechado / Ganho'},
+  {key:'perdido',  label:'Perdido'},
+];
+const ECLS={contato:'ep-contato',proposta:'ep-proposta',negociacao:'ep-negoc',ganho:'ep-ganho',perdido:'ep-perdido'};
+const ELBL={contato:'Contato feito',proposta:'Proposta enviada',negociacao:'Em negociação',ganho:'Fechado/Ganho',perdido:'Perdido'};
+const CCLS={contato:'col-contato',proposta:'col-proposta',negociacao:'col-negoc',ganho:'col-ganho',perdido:'col-perdido'};
+
+window.renderAll=()=>{renderStats();renderPipeline();renderLista();
+  if(document.getElementById('view-relatorio').classList.contains('active')) renderRelatorio();
+};
+
+/* ── STATS ── */
+function renderStats(){
+  const a=Object.values(window._leads||{});
+  const tot=a.length,
+        qte=a.filter(l=>l.qual==='quente').length,
+        fri=a.filter(l=>l.qual==='frio').length,
+        gan=a.filter(l=>l.etapa==='ganho').length,
+        com=a.filter(l=>l.com).length;
+  document.getElementById('statsBar').innerHTML=`
+    <div class="stat"><div class="stat-lbl">Total leads</div><div class="stat-val">${tot}</div></div>
+    <div class="stat s-red"><div class="stat-lbl">🔥 Quentes</div><div class="stat-val">${qte}</div></div>
+    <div class="stat s-blue"><div class="stat-lbl">❄ Frios</div><div class="stat-val">${fri}</div></div>
+    <div class="stat s-green"><div class="stat-lbl">Ganhos</div><div class="stat-val">${gan}</div></div>
+    <div class="stat s-gray"><div class="stat-lbl">No comercial</div><div class="stat-val">${com}</div></div>`;
+  document.getElementById('badge-pipeline').textContent=qte;
+  document.getElementById('badge-lista').textContent=tot;
+}
+
+/* ── PIPELINE ── */
+function renderPipeline(){
+  const leads=window._leads||{};
+  const quentes=Object.entries(leads).filter(([,l])=>l.qual==='quente');
+  let html='';
+  ETAPAS.forEach(e=>{
+    const cards=quentes.filter(([,l])=>l.etapa===e.key);
+    html+=`<div class="col ${CCLS[e.key]}"><div class="col-head"><span class="col-name">${e.label}</span><span class="col-cnt">${cards.length}</span></div><div class="col-bar"></div><div class="col-cards">`;
+    if(!cards.length) html+=`<div class="empty-col">Nenhum lead</div>`;
+    cards.forEach(([id,l])=>{
+      const last=l.historico?.length?l.historico[l.historico.length-1].texto:null;
+      const ds=l.data?new Date(l.data).toLocaleDateString('pt-BR'):'—';
+      html+=`<div class="card" onclick="abrirLead('${id}')">
+        <div class="card-head"><span class="card-name">${esc(l.nome)}</span><span class="badge-quente">🔥 Quente</span></div>
+        ${l.empresa?`<div class="card-empresa">${esc(l.empresa)}</div>`:'<div style="height:4px"></div>'}
+        ${l.produto?`<div><span class="card-produto">${esc(l.produto)}</span></div>`:''}
+        <div class="card-meta">
+          <div class="meta-item"><span class="meta-lbl">Entrada</span><span class="meta-val">${ds}</span></div>
+          <div class="meta-item"><span class="meta-lbl">Telefone</span><span class="meta-val blue">${esc(l.tel||'—')}</span></div>
+          <div class="meta-item" style="grid-column:1/-1"><span class="meta-lbl">Última interação</span><span class="meta-val">${last?esc(last.substring(0,65))+(last.length>65?'…':''):'Nenhuma ainda'}</span></div>
+        </div>
+        ${l.com?`<div class="card-com">● No comercial</div>`:''}
+      </div>`;
+    });
+    html+=`</div></div>`;
+  });
+  document.getElementById('pipeline').innerHTML=html;
+}
+
+/* ── LISTA ── */
+function renderLista(){
+  const leads=window._leads||{};
+  const b=(document.getElementById('busca')?.value||'').toLowerCase();
+  const fe=document.getElementById('fEtapa')?.value||'';
+  const fq=document.getElementById('fQual')?.value||'';
+  const fc=document.getElementById('fCom')?.value||'';
+  let arr=Object.entries(leads).filter(([,l])=>{
+    if(b&&![(l.nome||''),(l.empresa||''),(l.tel||'')].join(' ').toLowerCase().includes(b))return false;
+    if(fe==='frio'&&l.qual!=='frio')return false;
+    if(fe&&fe!=='frio'&&l.etapa!==fe)return false;
+    if(fq&&l.qual!==fq)return false;
+    if(fc==='sim'&&!l.com)return false;
+    if(fc==='nao'&&l.com)return false;
+    return true;
+  }).sort((a,z)=>(z[1].data||0)-(a[1].data||0));
+  const rows=arr.map(([id,l])=>{
+    const qt=l.qual==='quente'?'badge-quente':'ep ep-frio';
+    const ql=l.qual==='quente'?'🔥 Quente':'❄ Frio';
+    const ec=ECLS[l.etapa]||'ep-frio';
+    const el=l.qual==='frio'?'Banco de leads':ELBL[l.etapa]||'—';
+    const ds=l.data?new Date(l.data).toLocaleDateString('pt-BR'):'—';
+    return`<tr onclick="abrirLead('${id}')">
+      <td style="font-weight:600">${esc(l.nome)}</td>
+      <td>${esc(l.empresa||'—')}</td>
+      <td style="font-size:0.72rem;color:var(--muted)">${esc(l.produto||'—')}</td>
+      <td><span class="${qt}" style="display:inline-flex;font-size:0.6rem;font-weight:700;border-radius:4px;padding:2px 8px;">${ql}</span></td>
+      <td><span class="ep ${ec}">${el}</span></td>
+      <td style="text-align:center">${l.com?'✓':'—'}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--muted)">${ds}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tBody').innerHTML=rows||`<tr><td colspan="7" style="text-align:center;padding:36px;color:var(--muted);font-size:0.8rem">Nenhum lead encontrado</td></tr>`;
+}
+
+/* ══════════════════════════════════════════════
+   RELATÓRIO
+══════════════════════════════════════════════ */
+function renderRelatorio(){
+  const leads=window._leads||{};
+  const a=Object.values(leads);
+  const tot    = a.length;
+  const quentes= a.filter(l=>l.qual==='quente').length;
+  const frios  = a.filter(l=>l.qual==='frio').length;
+  const comCom = a.filter(l=>l.com).length;
+  const ganhos = a.filter(l=>l.etapa==='ganho').length;
+  const perdidos=a.filter(l=>l.etapa==='perdido').length;
+  const emNegoc= a.filter(l=>l.etapa==='negociacao').length;
+  const proposta=a.filter(l=>l.etapa==='proposta').length;
+  const contato= a.filter(l=>l.etapa==='contato').length;
+  const txConv = quentes>0 ? ((ganhos/quentes)*100).toFixed(1) : '0.0';
+  const txQuente=tot>0     ? ((quentes/tot)*100).toFixed(1)    : '0.0';
+  const ticketMed= ganhos>0 ? '—' : '—';
+
+  /* Leads por mês */
+  const porMes={};
+  a.forEach(l=>{
+    if(!l.data) return;
+    const d=new Date(l.data);
+    const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    if(!porMes[k]) porMes[k]={tot:0,quentes:0,ganhos:0};
+    porMes[k].tot++;
+    if(l.qual==='quente') porMes[k].quentes++;
+    if(l.etapa==='ganho') porMes[k].ganhos++;
+  });
+  const meses=Object.keys(porMes).sort().slice(-12);
+  const nomesMes=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+  /* Leads por produto */
+  const porProd={};
+  a.forEach(l=>{const p=l.produto||'Não informado';porProd[p]=(porProd[p]||0)+1;});
+  const prodList=Object.entries(porProd).sort((a,b)=>b[1]-a[1]);
+  const maxProd=prodList[0]?.[1]||1;
+
+  /* Funil */
+  const funnelSteps=[
+    {label:'Total de contatos',  val:tot,      cor:'#008835'},
+    {label:'Leads quentes',      val:quentes,  cor:'#d4620a'},
+    {label:'No comercial',       val:comCom,   cor:'#0076BE'},
+    {label:'Proposta enviada',   val:proposta, cor:'#7c5500'},
+    {label:'Em negociação',      val:emNegoc,  cor:'#6b35b8'},
+    {label:'Fechados / Ganhos',  val:ganhos,   cor:'#0a4a20'},
+  ];
+  const maxFunil=tot||1;
+
+  const wrap=document.getElementById('relatorioWrap');
+  wrap.innerHTML=`
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi k-gray"><div class="kpi-lbl">Total de leads</div><div class="kpi-val">${tot}</div><div class="kpi-sub">registrados</div></div>
+      <div class="kpi k-orange"><div class="kpi-lbl">🔥 Leads quentes</div><div class="kpi-val">${quentes}</div><div class="kpi-sub">${txQuente}% do total</div></div>
+      <div class="kpi k-blue"><div class="kpi-lbl">❄ Leads frios</div><div class="kpi-val">${frios}</div><div class="kpi-sub">banco de dados</div></div>
+      <div class="kpi k-blue"><div class="kpi-lbl">No comercial</div><div class="kpi-val">${comCom}</div><div class="kpi-sub">repassados</div></div>
+      <div class="kpi k-green"><div class="kpi-lbl">Fechados / Ganhos</div><div class="kpi-val">${ganhos}</div><div class="kpi-sub">convertidos</div></div>
+      <div class="kpi k-purple"><div class="kpi-lbl">Taxa de conversão</div><div class="kpi-val">${txConv}%</div><div class="kpi-sub">quentes → ganho</div></div>
+      <div class="kpi k-gray"><div class="kpi-lbl">Perdidos</div><div class="kpi-val">${perdidos}</div><div class="kpi-sub">não convertidos</div></div>
+      <div class="kpi k-orange"><div class="kpi-lbl">Em negociação</div><div class="kpi-val">${emNegoc}</div><div class="kpi-sub">abertos</div></div>
+    </div>
+
+    <!-- FUNIL -->
+    <div class="rel-section">
+      <div class="rel-section-title">Funil de conversão</div>
+      <div class="funil">
+        ${funnelSteps.map(s=>{
+          const pct=maxFunil>0?Math.max((s.val/maxFunil)*100,0):0;
+          const pctDisp=tot>0?((s.val/tot)*100).toFixed(1):'0.0';
+          return`<div class="funil-row">
+            <span class="funil-label">${s.label}</span>
+            <div class="funil-bar-wrap">
+              <div class="funil-bar" style="width:${pct}%;background:${s.cor}">
+                <span>${s.val} lead${s.val!==1?'s':''}</span>
+              </div>
+            </div>
+            <span class="funil-pct">${pctDisp}%</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- POR PRODUTO -->
+    <div class="rel-section">
+      <div class="rel-section-title">Leads por produto de interesse</div>
+      <div class="prod-table">
+        <table>
+          <thead><tr><th>Produto</th><th>Leads</th><th>% do total</th><th>Distribuição</th></tr></thead>
+          <tbody>
+            ${prodList.length?prodList.map(([p,n])=>{
+              const pct=tot>0?((n/tot)*100).toFixed(1):'0.0';
+              const bw=Math.round((n/maxProd)*120);
+              return`<tr>
+                <td style="font-weight:500">${esc(p)}</td>
+                <td style="font-family:'DM Mono',monospace;font-weight:500">${n}</td>
+                <td style="font-family:'DM Mono',monospace;color:var(--muted)">${pct}%</td>
+                <td><span class="bar-inline" style="width:${bw}px"></span></td>
+              </tr>`;
+            }).join(''):`<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted);font-size:0.8rem">Nenhum dado</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MENSAL -->
+    <div class="rel-section">
+      <div class="rel-section-title">Entradas por mês</div>
+      ${meses.length?`<div class="mensal-grid">
+        ${meses.map(k=>{
+          const [ano,mes]=k.split('-');
+          const d=porMes[k];
+          return`<div class="mes-col">
+            <div class="mes-nome">${nomesMes[parseInt(mes)-1]} ${ano.slice(2)}</div>
+            <div class="mes-val">${d.tot}</div>
+            <div class="mes-quente">🔥 ${d.quentes}</div>
+          </div>`;
+        }).join('')}
+      </div>`:`<div style="padding:24px;color:var(--muted);font-size:0.8rem;text-align:center">Nenhum dado ainda</div>`}
+    </div>
+
+    <!-- PIPELINE STATUS -->
+    <div class="rel-section">
+      <div class="rel-section-title">Status do pipeline (leads quentes)</div>
+      <div class="kpi-grid">
+        <div class="kpi k-blue"><div class="kpi-lbl">Contato feito</div><div class="kpi-val">${contato}</div><div class="kpi-sub">${quentes>0?((contato/quentes)*100).toFixed(0):0}% dos quentes</div></div>
+        <div class="kpi k-orange"><div class="kpi-lbl">Proposta enviada</div><div class="kpi-val">${proposta}</div><div class="kpi-sub">${quentes>0?((proposta/quentes)*100).toFixed(0):0}% dos quentes</div></div>
+        <div class="kpi k-purple"><div class="kpi-lbl">Em negociação</div><div class="kpi-val">${emNegoc}</div><div class="kpi-sub">${quentes>0?((emNegoc/quentes)*100).toFixed(0):0}% dos quentes</div></div>
+        <div class="kpi k-green"><div class="kpi-lbl">Ganhos</div><div class="kpi-val">${ganhos}</div><div class="kpi-sub">${quentes>0?((ganhos/quentes)*100).toFixed(0):0}% dos quentes</div></div>
+        <div class="kpi k-gray"><div class="kpi-lbl">Perdidos</div><div class="kpi-val">${perdidos}</div><div class="kpi-sub">${quentes>0?((perdidos/quentes)*100).toFixed(0):0}% dos quentes</div></div>
+      </div>
+    </div>
+  `;
+}
+
+/* ── MODAL ── */
+function abrirNovo(){
+  _id=null;_qual='frio';_etapa='contato';_com=false;
+  resetForm();
+  document.getElementById('mTitulo').textContent='Registrar Lead';
+  document.getElementById('mSub').textContent='Preencha os dados do contato recebido';
+  document.getElementById('btnDel').style.display='none';
+  document.getElementById('mt-pipeline').style.display='none';
+  document.getElementById('mt-hist').style.display='none';
+  mTab('dados',document.querySelector('.mtab'));
+  document.getElementById('modal').classList.add('open');
+  setTimeout(()=>document.getElementById('f-nome').focus(),80);
+}
+
+function abrirLead(id){
+  const l=(window._leads||{})[id];if(!l)return;
+  _id=id;_qual=l.qual||'frio';_etapa=l.etapa||'contato';_com=!!l.com;
+  document.getElementById('f-nome').value   =l.nome||'';
+  document.getElementById('f-empresa').value=l.empresa||'';
+  document.getElementById('f-tel').value    =l.tel||'';
+  document.getElementById('f-email').value  =l.email||'';
+  document.getElementById('f-cidade').value =l.cidade||'';
+  document.getElementById('f-produto').value=l.produto||'';
+  document.getElementById('f-obs').value    =l.obs||'';
+  document.getElementById('mTitulo').textContent=l.nome;
+  document.getElementById('mSub').textContent=l.empresa||'Lead';
+  document.getElementById('btnDel').style.display='';
+  document.getElementById('mt-pipeline').style.display='';
+  document.getElementById('mt-hist').style.display='';
+  syncQual();buildEtapaGrid();syncCom();renderHist(l.historico||[]);
+  mTab('dados',document.querySelector('.mtab'));
+  document.getElementById('modal').classList.add('open');
+}
+
+function fecharModal(){document.getElementById('modal').classList.remove('open');_id=null;}
+
+function resetForm(){
+  ['f-nome','f-empresa','f-tel','f-email','f-cidade','f-obs'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('f-produto').value='';
+  syncQual();buildEtapaGrid();syncCom();renderHist([]);
+}
+
+function mTab(t,btn){
+  document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.mpanel').forEach(p=>p.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  document.getElementById('mp-'+t).classList.add('active');
+  if(t==='pipeline')buildEtapaGrid();
+}
+
+function setQual(q){_qual=q;syncQual();}
+function syncQual(){
+  document.querySelectorAll('.qbtn').forEach(b=>{
+    b.classList.remove('sel');
+    if(b.classList.contains('q-'+_qual))b.classList.add('sel');
+  });
+}
+
+function setEtapa(e){_etapa=e;buildEtapaGrid();}
+function buildEtapaGrid(){
+  const g=document.getElementById('etapaGrid');if(!g)return;
+  g.innerHTML=ETAPAS.map(e=>`<button class="ebtn${_etapa===e.key?' active':''}" onclick="setEtapa('${e.key}')">${e.label}</button>`).join('');
+}
+
+function toggleCom(){_com=!_com;syncCom();}
+function syncCom(){
+  ['sw','sw2'].forEach(id=>{const e=document.getElementById(id);if(e)e.className='sw'+(_com?' on':'');});
+  ['toggleRow','toggleRow2'].forEach(id=>{const e=document.getElementById(id);if(e)e.className='toggle-row'+(_com?' on':'');});
+  const lbl=_com?'Sim — no comercial':'Não';
+  ['swLbl','swLbl2'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=lbl;});
+}
+
+function renderHist(hist){
+  const el=document.getElementById('histList');
+  if(!hist.length){el.innerHTML='<div class="hist-empty">Nenhuma interação registrada ainda.</div>';return;}
+  el.innerHTML=hist.slice().reverse().map(h=>`
+    <div class="hist-item"><div class="hist-dot"></div>
+      <div class="hist-ts">${new Date(h.ts).toLocaleString('pt-BR')}</div>
+      <div class="hist-txt">${esc(h.texto)}</div>
+    </div>`).join('');
+}
+function addHist(){
+  const txt=document.getElementById('histInput').value.trim();
+  if(!txt||!_id)return;
+  const l=(window._leads||{})[_id];
+  const hist=[...(l.historico||[]),{ts:Date.now(),texto:txt}];
+  window._update(_id,{historico:hist});
+  document.getElementById('histInput').value='';
+  toast('Interação registrada ✓');
+}
+
+function salvarLead(){
+  const nome=document.getElementById('f-nome').value.trim();
+  if(!nome){alert('Informe o nome do contato.');return;}
+  const data={
+    nome,qual:_qual,etapa:_qual==='frio'?'frio':_etapa,com:_com,
+    empresa:document.getElementById('f-empresa').value.trim(),
+    tel:    document.getElementById('f-tel').value.trim(),
+    email:  document.getElementById('f-email').value.trim(),
+    cidade: document.getElementById('f-cidade').value.trim(),
+    produto:document.getElementById('f-produto').value,
+    obs:    document.getElementById('f-obs').value.trim(),
+    data:_id?((window._leads||{})[_id]?.data||Date.now()):Date.now(),
+  };
+  if(_id){
+    data.historico=(window._leads||{})[_id]?.historico||[];
+    window._update(_id,data);
+    toast('Lead atualizado ✓');
+  }else{
+    data.historico=[];
+    window._push(data);
+    toast(_qual==='quente'?'🔥 Lead quente adicionado ao pipeline!':'Lead frio salvo no banco de leads.');
+  }
+  fecharModal();
+}
+
+function deletarLead(){
+  if(!_id||!confirm('Excluir este lead permanentemente?'))return;
+  window._remove(_id);fecharModal();toast('Lead excluído');
+}
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2800);}
+
+function switchView(v,btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('view-'+v).classList.add('active');
+  if(v==='lista')renderLista();
+  if(v==='relatorio')renderRelatorio();
+}
+
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))fecharModal();});
+
+window.addEventListener('DOMContentLoaded',()=>{window._leads={};renderAll();});
+
+window.abrirNovo=abrirNovo;window.abrirLead=abrirLead;window.fecharModal=fecharModal;
+window.mTab=mTab;window.switchView=switchView;window.setQual=setQual;
+window.setEtapa=setEtapa;window.toggleCom=toggleCom;window.salvarLead=salvarLead;
+window.deletarLead=deletarLead;window.addHist=addHist;window.renderLista=renderLista;
+</script>
+</body>
+</html>
