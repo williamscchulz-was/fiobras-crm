@@ -56,15 +56,70 @@ if('serviceWorker' in navigator){
 body{background:#f0f4f1;font-family:'Poppins',sans-serif;font-weight:400;color:var(--text);min-height:100vh;}
 
 /* HEADER */
-.header{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.logo{display:flex;align-items:center;gap:10px;}
-.logo-text{font-size:1.2rem;font-weight:700;color:var(--green);}
-.logo-crm{font-size:0.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);font-weight:500;margin-top:1px;}
+.header{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;overflow:hidden;}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.logo-text{font-size:1.15rem;font-weight:700;color:var(--green);}
+.logo-crm{font-size:0.55rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);font-weight:500;margin-top:1px;}
 .header-actions{display:flex;gap:8px;align-items:center;}
 .btn-primary{display:flex;align-items:center;gap:7px;background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-family:'Poppins',sans-serif;font-size:0.7rem;font-weight:600;cursor:pointer;transition:background 0.18s;}
 .btn-primary:hover{background:var(--green2);}
 .btn-outline{display:flex;align-items:center;gap:6px;background:var(--white);color:var(--muted);border:1.5px solid var(--border);border-radius:8px;padding:7px 14px;font-family:'Poppins',sans-serif;font-size:0.7rem;font-weight:600;cursor:pointer;transition:all 0.15s;}
 .btn-outline:hover{border-color:var(--green);color:var(--green);}
+.header-btn-text{display:inline;}
+.header-user{display:flex;align-items:center;gap:8px;}
+.header-user-nome{font-size:0.72rem;font-weight:600;color:var(--text);}
+.header-user-papel{font-size:0.56rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.header-sair{padding:6px 12px;background:var(--white);border:1.5px solid var(--border);border-radius:7px;font-family:'Poppins',sans-serif;font-size:0.65rem;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;}
+
+@media(max-width:700px){
+  /* HEADER — no mobile só logo + nome + sair */
+  .header{padding:0 14px;height:52px;}
+  .logo-crm{display:none;}
+  .logo svg{width:24px;height:24px;}
+  .logo-text{font-size:0.95rem;}
+  .btn-export,.btn-import,.btn-primary,.header-divisor{display:none!important;}
+  .header-actions{gap:6px;}
+  .header-user-papel{display:none;}
+  .header-user-nome{font-size:0.7rem;}
+  .header-sair{padding:5px 10px;font-size:0.62rem;}
+
+  /* PIPELINE — uma coluna por vez, sem scroll horizontal */
+  .pipeline-stage-nav{display:flex!important;}
+  .pipeline-wrap{padding:8px 12px 100px!important;overflow:visible!important;}
+  .pipeline{display:block!important;min-width:0!important;width:100%!important;}
+  /* Esconde todas as colunas por padrão, mostra só a ativa */
+  .col{display:none!important;width:100%!important;box-sizing:border-box;}
+  .col.mobile-ativa{display:flex!important;flex-direction:column!important;}
+  .col-head{padding:14px 16px 8px;}
+  .col-bar{margin:0 16px 4px;}
+  .col-cards{padding:8px;gap:8px;}
+  .card{border-radius:12px;padding:0 14px 14px;}
+  .card-handle{display:none;}
+  .card-name{font-size:0.88rem;}
+
+  /* LISTA */
+  .lista-wrap{padding:10px 12px 100px!important;}
+  .lista-filters{flex-direction:column;gap:8px;}
+  .fi{font-size:0.8rem;padding:10px 12px;width:100%;border-radius:10px;}
+  table th:nth-child(2),table td:nth-child(2),
+  table th:nth-child(4),table td:nth-child(4),
+  table th:nth-child(6),table td:nth-child(6),
+  table th:nth-child(7),table td:nth-child(7){display:none;}
+
+  /* DASHBOARD */
+  .dash-wrap{padding:12px 12px 100px!important;}
+  .kpi-row{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+  .kpi{padding:12px 12px;}
+  .kpi-val{font-size:1.6rem;}
+  .dash-grid{grid-template-columns:1fr;gap:10px;}
+  .funil-lbl{min-width:90px;font-size:0.6rem;}
+  .prod-name{min-width:100px;font-size:0.65rem;}
+  .meses-grid{grid-template-columns:repeat(auto-fill,minmax(56px,1fr));}
+
+  /* TABS ocultas */
+  .tabs{display:none!important;}
+  #bottomNav{display:flex!important;}
+}
 
 /* TABS */
 .tabs{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;display:flex;}
@@ -139,46 +194,70 @@ body{background:#f0f4f1;font-family:'Poppins',sans-serif;font-weight:400;color:v
 .em-lbl{font-size:0.65rem;font-weight:600;color:var(--text2);}
 .em-val{font-family:'DM Mono',monospace;font-size:1.2rem;font-weight:500;}
 
+/* pipeline CSS — ver bloco principal acima */
+
 /* ═══ PIPELINE ═══ */
-.kanban-info{display:flex;align-items:center;gap:8px;padding:12px 28px 0;}
-.ki-badge{background:var(--orange-l);color:var(--orange);border:1px solid #f0c090;border-radius:5px;font-size:0.62rem;font-weight:600;padding:3px 9px;}
-.ki-text{font-size:0.7rem;color:var(--muted);}
-.pipeline-wrap{padding:14px 28px 48px;overflow-x:auto;}
-.pipeline{display:flex;gap:14px;min-width:max-content;align-items:flex-start;}
-.col{background:var(--gray);border:1px solid var(--gray2);border-radius:12px;width:272px;flex-shrink:0;}
+.pipeline-stage-nav{
+  display:none;
+  gap:0;overflow-x:auto;scrollbar-width:none;
+  padding:0 14px;
+  background:var(--white);border-bottom:1px solid var(--border);
+  -webkit-overflow-scrolling:touch;
+}
+.pipeline-stage-nav::-webkit-scrollbar{display:none;}
+.psnav{
+  flex-shrink:0;padding:13px 16px;
+  background:none;border:none;border-bottom:2.5px solid transparent;
+  font-family:'Poppins',sans-serif;font-size:0.72rem;font-weight:600;
+  color:var(--muted);cursor:pointer;transition:all 0.18s;
+  white-space:nowrap;margin-bottom:-1px;
+}
+.psnav.active{color:var(--green);border-bottom-color:var(--green);}
+.psnav-cnt{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--green-l);color:var(--green);
+  border-radius:10px;font-size:0.58rem;font-weight:700;
+  min-width:18px;height:16px;padding:0 5px;margin-left:5px;
+}
+.psnav:not(.active) .psnav-cnt{background:var(--gray2);color:var(--muted);}
+
+.pipeline-wrap{padding:16px 20px 48px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.pipeline{display:flex;gap:12px;min-width:max-content;align-items:flex-start;}
+
+.col{background:var(--gray);border:1px solid var(--gray2);border-radius:12px;width:260px;flex-shrink:0;display:flex;flex-direction:column;}
 .col-head{padding:14px 16px 8px;display:flex;align-items:center;justify-content:space-between;}
-.col-name{font-size:0.64rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;}
+.col-name{font-size:0.62rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;}
 .col-cnt{font-family:'DM Mono',monospace;font-size:0.68rem;background:rgba(0,0,0,0.07);color:var(--muted);border-radius:20px;padding:2px 9px;}
-.col-bar{height:3px;margin:0 16px 2px;border-radius:3px;}
-.col-cards{padding:8px;min-height:80px;display:flex;flex-direction:column;gap:8px;}
-.empty-col{text-align:center;padding:24px 10px;font-size:0.7rem;color:var(--gray3);}
+.col-bar{height:3px;margin:0 16px 4px;border-radius:3px;}
+.col-cards{padding:8px;min-height:60px;display:flex;flex-direction:column;gap:8px;}
+.empty-col{text-align:center;padding:32px 12px;font-size:0.72rem;color:var(--gray3);}
+
 .col-contato  .col-name{color:#0b4a7a;}.col-contato  .col-bar{background:var(--blue);}
 .col-proposta .col-name{color:#6b4a00;}.col-proposta .col-bar{background:var(--yellow);}
 .col-negoc    .col-name{color:#4a1f80;}.col-negoc    .col-bar{background:var(--purple);}
 .col-ganho    .col-name{color:#0a4a20;}.col-ganho    .col-bar{background:var(--green);}
 .col-perdido  .col-name{color:var(--muted);}.col-perdido .col-bar{background:var(--gray3);}
 
-/* CARD */
-.card{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:0 14px 13px;transition:box-shadow 0.18s,border-color 0.18s;position:relative;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:0 14px 13px;transition:box-shadow 0.18s,border-color 0.18s;position:relative;}
 .card:hover{box-shadow:0 2px 14px rgba(0,100,40,0.12);border-color:var(--green);}
 .card.dragging{opacity:0.25;transform:scale(0.96);pointer-events:none;}
-.col-cards.drag-over{background:rgba(0,136,53,0.08);border-radius:8px;outline:2.5px dashed var(--green);outline-offset:-4px;}
-.card-handle{padding:8px 0 5px;cursor:grab;display:flex;align-items:center;gap:5px;color:var(--gray3);transition:color 0.15s;}
-.card-handle:hover{color:var(--green);}
+.col-cards.drag-over{background:rgba(0,136,53,0.08);border-radius:8px;outline:2px dashed var(--green);outline-offset:-4px;}
+
+.card-handle{padding:10px 0 6px;cursor:grab;display:flex;align-items:center;gap:5px;color:var(--gray3);}
 .card-handle:active{cursor:grabbing;}
 .handle-icon{display:grid;grid-template-columns:1fr 1fr;gap:2.5px;width:10px;flex-shrink:0;}
 .handle-dot{width:3px;height:3px;border-radius:50%;background:currentColor;}
 .handle-txt{font-size:0.54rem;letter-spacing:0.8px;text-transform:uppercase;font-weight:600;}
 .card-body{cursor:pointer;}
 .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:4px;}
-.card-name{font-size:0.83rem;font-weight:700;color:var(--text);line-height:1.3;}
-.badge-q{display:inline-flex;align-items:center;font-size:0.57rem;font-weight:700;border-radius:4px;padding:2px 7px;background:#fff0e6;color:#c05000;border:1px solid #f8c99a;flex-shrink:0;text-transform:uppercase;}
-.card-empresa{font-size:0.7rem;color:var(--muted);margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.card-produto{display:inline-flex;font-size:0.62rem;font-weight:600;background:var(--green-l);color:var(--green2);border-radius:4px;padding:2px 8px;margin-bottom:8px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.card-meta{display:grid;grid-template-columns:1fr 1fr;gap:5px;border-top:1px solid var(--gray2);padding-top:8px;}
+.card-name{font-size:0.84rem;font-weight:700;color:var(--text);line-height:1.3;}
+.badge-q{display:inline-flex;align-items:center;font-size:0.57rem;font-weight:700;border-radius:4px;padding:2px 7px;background:#fff0e6;color:#c05000;border:1px solid #f8c99a;flex-shrink:0;text-transform:uppercase;white-space:nowrap;}
+.card-empresa{font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-weight:500;}
+.card-produto{display:inline-block;font-size:0.62rem;font-weight:600;color:var(--green);background:var(--green-ll);border:1px solid var(--green-l);border-radius:4px;padding:2px 8px;margin-bottom:8px;}
+.card-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin-bottom:6px;}
 .meta-item{display:flex;flex-direction:column;gap:1px;}
-.meta-lbl{font-size:0.53rem;letter-spacing:0.8px;text-transform:uppercase;color:var(--gray3);font-weight:600;}
-.meta-val{font-size:0.67rem;color:var(--text2);font-family:'DM Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.meta-lbl{font-size:0.52rem;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--gray3);}
+.meta-val{font-size:0.7rem;font-weight:500;color:var(--text2);}
 .meta-val.blue{color:var(--blue);}
 
 /* ═══ LISTA ═══ */
@@ -337,19 +416,47 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
 .tempo-ok   {background:var(--gray2);color:var(--muted);border:1px solid var(--gray3);}
 .tempo-alerta{background:var(--red-l);color:var(--red);border:1px solid #f5b0b0;}
 
-@media(max-width:700px){
-  .dash-wrap,.pipeline-wrap,.lista-wrap,.kanban-info{padding-left:14px;padding-right:14px;}
-  .header,.tabs{padding-left:14px;padding-right:14px;}
-  .kpi-row{grid-template-columns:1fr 1fr;}
-  table th:nth-child(5),table td:nth-child(5),table th:nth-child(6),table td:nth-child(6){display:none;}
-}
+/* LOGIN USER CARDS */
+.user-card{display:flex;align-items:center;gap:14px;padding:13px 16px;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.18s;background:var(--white);}
+.user-card:hover{border-color:var(--green);background:var(--green-ll);}
+.user-card.selected{border-color:var(--green);background:var(--green-ll);box-shadow:0 0 0 3px rgba(0,136,53,0.1);}
+.uc-avatar{width:40px;height:40px;border-radius:50%;background:var(--green-l);color:var(--green);font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.uc-info{flex:1;}
+.uc-nome{font-family:'Poppins',sans-serif;font-size:0.85rem;font-weight:600;color:var(--text);}
+.uc-cargo{font-family:'Poppins',sans-serif;font-size:0.62rem;color:var(--muted);margin-top:1px;}
+.uc-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);transition:all 0.18s;flex-shrink:0;}
+.uc-check.checked{background:var(--green);border-color:var(--green);box-shadow:inset 0 0 0 3px #fff;}
+
+/* BOTTOM NAV */
+.bnav{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;padding:4px 2px;color:#b0bec5;transition:color 0.2s;font-family:'Poppins',sans-serif;min-width:0;}
+.bnav-pill{width:40px;height:30px;border-radius:14px;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
+.bnav.active{color:var(--green);}
+.bnav.active .bnav-pill{background:var(--green-l);}
+.bnav-lbl{font-size:0.5rem;font-weight:600;letter-spacing:0.2px;line-height:1;}
+
+/* COMENTÁRIOS NO CARD */
+.comments-section{margin-top:8px;border-top:1px solid var(--gray2);padding-top:8px;}
+.comment-item{display:flex;gap:6px;padding:3px 0;border-bottom:1px dashed var(--gray2);font-size:0.63rem;}
+.comment-item:last-child{border-bottom:none;}
+.comment-who{font-weight:700;color:var(--green);white-space:nowrap;}
+.comment-time{color:var(--gray3);white-space:nowrap;font-size:0.57rem;font-family:'DM Mono',monospace;}
+.comment-txt{flex:1;color:var(--text2);line-height:1.4;}
+.comment-form{display:flex;gap:5px;margin-top:5px;}
+.comment-form input{flex:1;padding:6px 9px;border:1.5px solid var(--border);border-radius:6px;font-family:'Poppins',sans-serif;font-size:0.68rem;outline:none;color:var(--text);background:var(--white);}
+.comment-form input:focus{border-color:var(--green);}
+.comment-form button{padding:5px 10px;background:var(--green);border:none;border-radius:6px;color:#fff;font-size:0.62rem;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;white-space:nowrap;}
+
+/* LOG MOVIMENTAÇÃO NO CARD */
+.mov-log-item{font-size:0.57rem;color:var(--muted);background:var(--gray);border-radius:4px;padding:2px 7px;margin-top:4px;display:inline-block;}
+
+
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="logo">
-    <svg width="30" height="30" viewBox="0 0 40 40" fill="none">
+    <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
       <path d="M6 26 Q10 14 18 10 Q24 7 30 12" stroke="#0076BE" stroke-width="3.5" fill="none" stroke-linecap="round"/>
       <path d="M6 32 Q12 20 22 16 Q28 13 34 18" stroke="#0076BE" stroke-width="3.5" fill="none" stroke-linecap="round"/>
       <path d="M22 8 Q28 8 32 14 Q34 20 30 26 Q26 32 20 32" stroke="#008835" stroke-width="3.5" fill="none" stroke-linecap="round"/>
@@ -358,21 +465,25 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
     <div><div class="logo-text">Fiobras</div><div class="logo-crm">CRM de Vendas</div></div>
   </div>
   <div class="header-actions">
-    <div style="display:flex;align-items:center;gap:10px;padding:0 4px;">
-      <div style="text-align:right;">
-        <div style="font-size:0.72rem;font-weight:600;color:var(--text)" id="userNome"></div>
-        <div style="font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;" id="userPapel"></div>
+    <div class="header-user">
+      <div>
+        <div class="header-user-nome" id="userNome"></div>
+        <div class="header-user-papel" id="userPapel"></div>
       </div>
-      <button onclick="fazerLogout()" style="padding:6px 12px;background:var(--white);border:1.5px solid var(--border);border-radius:7px;font-family:'Poppins',sans-serif;font-size:0.65rem;font-weight:600;color:var(--muted);cursor:pointer;" title="Sair">Sair</button>
+      <button class="header-sair" onclick="fazerLogout()">Sair</button>
     </div>
-    <div style="width:1px;height:28px;background:var(--border);"></div>
-    <button class="btn-outline" onclick="abrirImport()">
+    <div class="header-divisor" style="width:1px;height:28px;background:var(--border);"></div>
+    <button class="btn-outline btn-export" onclick="exportarLeads()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 9V1M3 6l3.5 3.5L10 6M1 11h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="header-btn-text">Exportar</span>
+    </button>
+    <button class="btn-outline btn-import" onclick="abrirImport()">
       <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3 6l3.5 3.5L10 6M1 11h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Importar CSV
+      <span class="header-btn-text">Importar CSV</span>
     </button>
     <button class="btn-primary" onclick="abrirNovo()">
       <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-      Registrar Lead
+      <span class="header-btn-text">Registrar Lead</span>
     </button>
   </div>
 </div>
@@ -390,10 +501,15 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
 
 <!-- ═══ PIPELINE ═══ -->
 <div class="view" id="view-pipeline">
-  <div class="kanban-info">
-    <span class="ki-badge">🔥 Apenas leads Quentes</span>
-    <span class="ki-text">Leads frios ficam no Banco de Leads.</span>
+  <!-- Seletor de etapa mobile — tabs horizontais scrolláveis -->
+  <div class="pipeline-stage-nav" id="pipelineStageNav">
+    <button class="psnav active" data-etapa="contato"    onclick="setPipelineEtapa('contato',this)">Contato</button>
+    <button class="psnav"         data-etapa="proposta"   onclick="setPipelineEtapa('proposta',this)">Proposta</button>
+    <button class="psnav"         data-etapa="negociacao" onclick="setPipelineEtapa('negociacao',this)">Negociação</button>
+    <button class="psnav"         data-etapa="ganho"      onclick="setPipelineEtapa('ganho',this)">Ganhos</button>
+    <button class="psnav"         data-etapa="perdido"    onclick="setPipelineEtapa('perdido',this)">Perdidos</button>
   </div>
+  <!-- Desktop: colunas lado a lado | Mobile: uma coluna por vez -->
   <div class="pipeline-wrap"><div class="pipeline" id="pipeline"></div></div>
 </div>
 
@@ -427,6 +543,10 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
       </table>
     </div>
   </div>
+  <!-- FAB + mobile, só aparece na aba Leads -->
+  <button id="fabNovo" onclick="abrirNovo()" style="display:none;position:fixed;bottom:calc(88px + env(safe-area-inset-bottom));right:20px;width:52px;height:52px;background:var(--green);border:none;border-radius:50%;box-shadow:0 4px 20px rgba(0,136,53,0.4);cursor:pointer;align-items:center;justify-content:center;z-index:150;">
+    <svg width="22" height="22" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+  </button>
 </div>
 
 <!-- ═══ MODAL LEAD ═══ -->
@@ -587,6 +707,30 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
 
 <div class="toast" id="toast"></div>
 
+<!-- ═══ SPLASH SCREEN ═══ -->
+<div id="splash" style="position:fixed;inset:0;z-index:9999;background:var(--green);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;transition:opacity 0.6s ease;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px">
+    <div style="width:80px;height:80px;background:rgba(255,255,255,0.15);border-radius:22px;display:flex;align-items:center;justify-content:center;">
+      <svg width="48" height="48" viewBox="0 0 40 40" fill="none">
+        <path d="M6 26 Q10 14 18 10 Q24 7 30 12" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".7"/>
+        <path d="M6 32 Q12 20 22 16 Q28 13 34 18" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".7"/>
+        <path d="M22 8 Q28 8 32 14 Q34 20 30 26 Q26 32 20 32" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M26 6 Q30 6 32 10" stroke="#FFCB00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div style="text-align:center">
+      <div style="font-family:'Poppins',sans-serif;font-size:2rem;font-weight:700;color:#fff;letter-spacing:-0.5px;line-height:1">Fiobras</div>
+      <div style="font-family:'Poppins',sans-serif;font-size:0.65rem;font-weight:400;color:rgba(255,255,255,0.6);letter-spacing:3px;text-transform:uppercase;margin-top:6px">CRM de Vendas</div>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:48px;display:flex;flex-direction:column;align-items:center;gap:10px">
+    <div style="width:48px;height:3px;background:rgba(255,255,255,0.25);border-radius:10px;overflow:hidden">
+      <div id="splash-bar" style="height:100%;width:0%;background:#fff;border-radius:10px;transition:width 2s linear"></div>
+    </div>
+    <div style="font-family:'Poppins',sans-serif;font-size:0.55rem;color:rgba(255,255,255,0.35);letter-spacing:1px">v2.0</div>
+  </div>
+</div>
+
 <!-- ═══ TELA DE LOGIN ═══ -->
 <div id="loginScreen" style="display:flex;position:fixed;inset:0;background:#f0f4f1;z-index:9000;align-items:center;justify-content:center;flex-direction:column;">
   <div style="background:#fff;border-radius:16px;padding:40px 36px;width:360px;max-width:92vw;box-shadow:0 20px 60px rgba(0,60,20,0.14);border:1px solid var(--border);">
@@ -602,25 +746,47 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
         <div style="font-size:0.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);font-weight:500;">CRM de Vendas</div>
       </div>
     </div>
-    <div style="font-size:0.88rem;font-weight:600;color:var(--text);margin-bottom:20px;font-family:'Poppins',sans-serif;">Entrar no sistema</div>
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <div style="display:flex;flex-direction:column;gap:5px;">
-        <label style="font-size:0.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-family:'Poppins',sans-serif;">Usuário</label>
-        <input id="loginUser" type="text" autocomplete="username"
-          style="padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.85rem;outline:none;color:var(--text);"
-          onkeydown="if(event.key==='Enter')document.getElementById('loginSenha').focus()">
+    <div style="font-size:0.88rem;font-weight:600;color:var(--text);margin-bottom:6px;font-family:'Poppins',sans-serif;">Bem-vindo de volta</div>
+    <div style="font-size:0.72rem;color:var(--muted);margin-bottom:28px;font-family:'Poppins',sans-serif;">Selecione seu perfil para continuar</div>
+
+    <!-- Seletor de usuário tipo card -->
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px" id="userCards">
+      <div class="user-card" onclick="selecionarUsuario('suyanne','Suyanne')" id="uc-suyanne">
+        <div class="uc-avatar">S</div>
+        <div class="uc-info"><div class="uc-nome">Suyanne</div><div class="uc-cargo">Recepção</div></div>
+        <div class="uc-check" id="chk-suyanne"></div>
       </div>
+      <div class="user-card" onclick="selecionarUsuario('jacques','Jacques')" id="uc-jacques">
+        <div class="uc-avatar">J</div>
+        <div class="uc-info"><div class="uc-nome">Jacques</div><div class="uc-cargo">Comercial</div></div>
+        <div class="uc-check" id="chk-jacques"></div>
+      </div>
+      <div class="user-card" onclick="selecionarUsuario('admin','Admin')" id="uc-admin">
+        <div class="uc-avatar" style="background:var(--text);color:#fff">A</div>
+        <div class="uc-info"><div class="uc-nome">Administrador</div><div class="uc-cargo">Acesso total</div></div>
+        <div class="uc-check" id="chk-admin"></div>
+      </div>
+    </div>
+
+    <!-- Campo senha — aparece ao selecionar -->
+    <div id="senhaWrap" style="display:none;flex-direction:column;gap:12px;">
       <div style="display:flex;flex-direction:column;gap:5px;">
         <label style="font-size:0.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-family:'Poppins',sans-serif;">Senha</label>
         <input id="loginSenha" type="password" autocomplete="current-password"
-          style="padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.85rem;outline:none;color:var(--text);"
-          onkeydown="if(event.key==='Enter')fazerLogin()">
+          style="padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Poppins',sans-serif;font-size:0.9rem;outline:none;color:var(--text);transition:border-color 0.2s;letter-spacing:2px;"
+          onkeydown="if(event.key==='Enter')fazerLogin()"
+          onfocus="this.style.borderColor='var(--green)'"
+          onblur="this.style.borderColor='var(--border)'">
       </div>
       <div id="loginErro" style="display:none;background:var(--red-l);border:1px solid #f5b0b0;border-radius:7px;padding:9px 12px;font-size:0.73rem;color:var(--red);font-family:'Poppins',sans-serif;"></div>
       <button id="loginBtn" onclick="fazerLogin()"
         style="margin-top:4px;padding:11px;background:var(--green);color:#fff;border:none;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;transition:background 0.18s;">
         Entrar
       </button>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+        <input type="checkbox" id="lembrarCheck" style="width:15px;height:15px;accent-color:var(--green);cursor:pointer">
+        <label for="lembrarCheck" style="font-size:0.7rem;color:var(--muted);cursor:pointer;font-family:'Poppins',sans-serif">Lembrar neste dispositivo</label>
+      </div>
     </div>
   </div>
   <div style="margin-top:16px;font-size:0.68rem;color:var(--muted);font-family:'Poppins',sans-serif;">Fiobras · CRM Interno · Acesso restrito</div>
@@ -807,6 +973,19 @@ function renderDashboard(){
 
 /* ═══ PIPELINE + DRAG & DROP ═══ */
 let _dragId=null;
+let _etapaAtivaMobile='contato';
+
+function setPipelineEtapa(etapa,btn){
+  _etapaAtivaMobile=etapa;
+  /* Atualiza tabs */
+  document.querySelectorAll('.psnav').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  /* Mostra só a coluna correspondente no mobile */
+  document.querySelectorAll('.col').forEach(c=>{
+    c.classList.toggle('mobile-ativa', c.dataset.etapa===etapa);
+  });
+}
+window.setPipelineEtapa=setPipelineEtapa;
 
 function renderPipeline(){
   const leads=window._leads||{};
@@ -814,11 +993,12 @@ function renderPipeline(){
   let html='';
   ETAPAS.forEach(e=>{
     const cards=quentes.filter(([,l])=>l.etapa===e.key);
-    html+=`<div class="col ${CCLS[e.key]}">
+    const isMobileAtiva=e.key===_etapaAtivaMobile;
+    html+=`<div class="col ${CCLS[e.key]}${isMobileAtiva?' mobile-ativa':''}" data-etapa="${e.key}">
       <div class="col-head"><span class="col-name">${e.label}</span><span class="col-cnt">${cards.length}</span></div>
       <div class="col-bar"></div>
       <div class="col-cards" data-etapa="${e.key}">`;
-    if(!cards.length) html+=`<div class="empty-col">Arraste um card aqui</div>`;
+    if(!cards.length) html+=`<div class="empty-col">Nenhum lead nesta etapa</div>`;
     cards.forEach(([id,l])=>{
       const last=l.historico?.length?l.historico[l.historico.length-1].texto:null;
       const ds=l.data?new Date(l.data).toLocaleDateString('pt-BR'):'—';
@@ -832,7 +1012,7 @@ function renderPipeline(){
           <span class="handle-txt">arraste para mover</span>
         </div>
         <div class="card-body" data-id="${id}">
-          <div class="card-head"><span class="card-name">${esc(l.nome)}</span><span class="badge-q">🔥 Quente</span></div>
+          <div class="card-head"><span class="card-name">${esc(l.nome)}</span><span class="badge-q">Quente</span></div>
           ${l.empresa?`<div class="card-empresa">${esc(l.empresa)}</div>`:'<div style="height:4px"></div>'}
           ${l.produto?`<div><span class="card-produto">${esc(l.produto)}</span></div>`:''}
           <div class="card-meta">
@@ -850,6 +1030,21 @@ function renderPipeline(){
   document.getElementById('pipeline').innerHTML=html;
   document.getElementById('badge-pipeline').textContent=quentes.length;
   document.getElementById('badge-lista').textContent=Object.keys(window._leads||{}).length;
+
+  /* Atualiza contadores no nav mobile */
+  document.querySelectorAll('.psnav').forEach(btn=>{
+    const etapa=btn.dataset.etapa;
+    const cnt=quentes.filter(([,l])=>l.etapa===etapa).length;
+    /* Remove contador antigo */
+    btn.querySelectorAll('.psnav-cnt').forEach(el=>el.remove());
+    if(cnt>0){
+      const sp=document.createElement('span');
+      sp.className='psnav-cnt';
+      sp.textContent=cnt;
+      btn.appendChild(sp);
+    }
+  });
+
   initDragDrop();
 }
 
@@ -1104,6 +1299,12 @@ function addHist(){
 
 /* SALVAR */
 function salvarLead(){
+  /* Suyanne só pode salvar leads no banco (frio) */
+  const u=window._user?.usuario;
+  if(u==='suyanne'&&_qual==='quente'){
+    toast('Você pode registrar apenas leads no banco de dados.');
+    return;
+  }
   const nome=document.getElementById('f-nome').value.trim();
   if(!nome){alert('Informe o nome do contato.');return;}
   const etapaFinal=_qual==='frio'?'frio':_etapa;
@@ -1260,20 +1461,30 @@ function toast(msg,type=''){
 function switchView(v,btn){
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.view').forEach(p=>p.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  document.getElementById('view-'+v).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('view-'+v)?.classList.add('active');
+  document.querySelectorAll('.bnav').forEach(b=>b.classList.remove('active'));
+  document.getElementById('bn-'+v)?.classList.add('active');
+  /* FAB — só na aba Leads, mobile, e não para Suyanne */
+  const fab=document.getElementById('fabNovo');
+  if(fab){
+    const isMobile=window.innerWidth<=700;
+    const bloqueado=window._user?.usuario==='suyanne';
+    fab.style.display=(v==='lista'&&isMobile&&!bloqueado)?'flex':'none';
+  }
   if(v==='lista')renderLista();
   if(v==='dashboard')renderDashboard();
 }
 
 /* ═══ LOGIN LOCAL (sem Firebase Auth) ═══ */
 const USUARIOS={
-  'admin': {senha:'2725', nome:'Admin',    papel:'admin'},
-  'user':  {senha:'2725', nome:'Usuário',  papel:'user'},
+  'admin':   {senha:'admin', nome:'Administrador', papel:'admin'},
+  'jacques': {senha:'2725',  nome:'Jacques',       papel:'user'},
+  'suyanne': {senha:'2725',  nome:'Suyanne',       papel:'user'},
 };
 
 function fazerLogin(){
-  const usuario=document.getElementById('loginUser').value.trim().toLowerCase();
+  const usuario=_usuarioSelecionado||'';
   const senha  =document.getElementById('loginSenha').value;
   const erro   =document.getElementById('loginErro');
   const btn    =document.getElementById('loginBtn');
@@ -1299,16 +1510,43 @@ function mostrarApp(){
   document.getElementById('appScreen').style.display='block';
   document.getElementById('userNome').textContent=u.nome;
   document.getElementById('userPapel').textContent=u.papel==='admin'?'Admin':'Usuário';
-  /* user comum não vê aba Pipeline (só comercial e admin) */
-  aplicarPermissoes(u.papel);
+  aplicarPermissoes(u.usuario);
   renderAll();
 }
 
-function aplicarPermissoes(papel){
-  if(papel==='user'){
-    /* user vê tudo, mas não pode excluir */
-    document.querySelectorAll('.tab-comercial').forEach(t=>t.style.display='');
+function aplicarPermissoes(usuario){
+  const isSuyanne = usuario==='suyanne';
+  const isAdmin   = usuario==='admin';
+  const isJacques = usuario==='jacques';
+
+  /* Tela inicial por usuário */
+  let telaInicial='pipeline'; // Jacques
+  if(isAdmin)    telaInicial='dashboard';
+  if(isSuyanne)  telaInicial='lista';
+
+  /* Ativa a view correta */
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('view-'+telaInicial)?.classList.add('active');
+  document.querySelector(`.tab[onclick*="'${telaInicial}'"]`)?.classList.add('active');
+
+  /* Bottom nav — ativa o botão correto */
+  document.querySelectorAll('.bnav').forEach(b=>b.classList.remove('active'));
+  document.getElementById('bn-'+telaInicial)?.classList.add('active');
+
+  /* Suyanne: só pode EDITAR banco de leads
+     Pode visualizar tudo, mas registrar/importar/editar bloqueados */
+  if(isSuyanne){
+    document.querySelector('.btn-primary')?.style.setProperty('display','none');
+    document.querySelector('.btn-import')?.style.setProperty('display','none');
+  } else {
+    document.querySelector('.btn-primary')?.style.removeProperty('display');
+    document.querySelector('.btn-import')?.style.removeProperty('display');
   }
+
+  /* Renderiza a tela inicial correta */
+  if(telaInicial==='lista') renderLista();
+  if(telaInicial==='dashboard') renderDashboard();
 }
 
 function fazerLogout(){
@@ -1317,7 +1555,6 @@ function fazerLogout(){
   window._user=null;
   document.getElementById('appScreen').style.display='none';
   document.getElementById('loginScreen').style.display='flex';
-  document.getElementById('loginUser').value='';
   document.getElementById('loginSenha').value='';
   document.getElementById('loginErro').style.display='none';
 }
@@ -1368,7 +1605,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('appScreen').style.display='none';
   /* Foca no campo usuário */
-  setTimeout(()=>document.getElementById('loginUser').focus(),100);
+  setTimeout(()=>document.getElementById('loginSenha')?.focus(),100);
 });
 
 window.abrirNovo=abrirNovo;window.abrirLead=abrirLead;window.fecharModal=fecharModal;
@@ -1452,6 +1689,226 @@ window.usarSugestao=usarSugestao;
 window.confirmarMover=confirmarMover;
 window.cancelarMover=cancelarMover;
 window.abrirPopupMover=abrirPopupMover;
+
+/* ═══ SPLASH ═══ */
+(function(){
+  setTimeout(()=>{const b=document.getElementById('splash-bar');if(b)b.style.width='100%';},100);
+  setTimeout(()=>{const s=document.getElementById('splash');if(!s)return;s.style.opacity='0';setTimeout(()=>{s.style.display='none';},600);},2400);
+})();
+
+/* ═══ LEMBRAR LOGIN ═══ */
+const _fazerLoginBase=fazerLogin;
+window.fazerLogin=function(){
+  const usuario=_usuarioSelecionado;
+  const senha=document.getElementById('loginSenha').value;
+  const perfil=USUARIOS[usuario];
+  const erro=document.getElementById('loginErro');
+  erro.style.display='none';
+  if(!usuario){
+    erro.textContent='Selecione seu perfil para continuar.';
+    erro.style.display='block';
+    return;
+  }
+  if(!perfil||perfil.senha!==senha){
+    erro.textContent='Senha incorreta. Tente novamente.';
+    erro.style.display='block';
+    document.getElementById('loginSenha').value='';
+    document.getElementById('loginSenha').focus();
+    return;
+  }
+  window._user={usuario,nome:perfil.nome,papel:perfil.papel};
+  const lembrar=document.getElementById('lembrarCheck');
+  if(lembrar&&lembrar.checked){
+    try{localStorage.setItem('fiobras_crm_user',JSON.stringify(window._user));}catch(e){}
+  }else{
+    try{localStorage.removeItem('fiobras_crm_user');}catch(e){}
+  }
+  mostrarApp();
+  document.getElementById('bottomNav').style.display='flex';
+  initNotificacoes();
+};
+
+const _fazerLogoutBase=fazerLogout;
+window.fazerLogout=function(){
+  if(!confirm('Deseja sair do CRM?'))return;
+  try{localStorage.removeItem('fiobras_crm_user');}catch(e){}
+  sessionStorage.removeItem('crm_user');
+  window._user=null;
+  document.getElementById('appScreen').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('bottomNav').style.display='none';
+  document.getElementById('loginSenha').value='';
+  document.getElementById('senhaWrap').style.display='none';
+  document.getElementById('loginErro').style.display='none';
+  _usuarioSelecionado='';
+  document.querySelectorAll('.user-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.uc-check').forEach(c=>c.classList.remove('checked'));
+};
+
+/* Restaura sessão salva */
+(function(){
+  try{
+    const saved=localStorage.getItem('fiobras_crm_user');
+    if(saved){
+      const u=JSON.parse(saved);
+      window._user=u;
+      document.getElementById('loginScreen').style.display='none';
+      document.getElementById('appScreen').style.display='block';
+      document.getElementById('userNome').textContent=u.nome;
+      document.getElementById('userPapel').textContent=u.papel==='admin'?'Admin':'Usuário';
+      document.getElementById('bottomNav').style.display='flex';
+      aplicarPermissoes(u.papel);
+      renderAll();
+      setTimeout(initNotificacoes,1000);
+    }
+  }catch(e){}
+})();
+
+/* ═══ BOTTOM NAV ═══ */
+function bnSwitch(v,btn){
+  document.querySelectorAll('.bnav').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  const tabEl=document.querySelector(`.tab[onclick*="'${v}'"]`);
+  switchView(v,tabEl||document.querySelector('.tab'));
+}
+
+/* ═══ NOTIFICAÇÕES PUSH ═══ */
+let _notifPerm='default';
+let _leadsVistos=new Set();
+
+function initNotificacoes(){
+  if(!('Notification' in window))return;
+  _notifPerm=Notification.permission;
+  if(_notifPerm==='default'){
+    setTimeout(()=>{
+      Notification.requestPermission().then(p=>{
+        _notifPerm=p;
+        if(p==='granted')dispararNotif('🔥 Fiobras CRM','Notificações ativadas!');
+      });
+    },2000);
+  }
+  Object.keys(window._leads||{}).forEach(id=>_leadsVistos.add(id));
+}
+
+function dispararNotif(titulo,corpo){
+  if(_notifPerm!=='granted')return;
+  try{
+    if(navigator.vibrate)navigator.vibrate([200,100,200]);
+    const n=new Notification(titulo,{body:corpo,
+      icon:'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%23008835'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='100' font-family='sans-serif'>🔥</text></svg>`),
+      tag:'fiobras-lead',requireInteraction:false});
+    n.onclick=()=>{window.focus();n.close();};
+  }catch(e){}
+}
+
+/* Integra checagem de novos leads no renderAll */
+const _renderAllBase=window.renderAll;
+window.renderAll=function(){
+  _renderAllBase&&_renderAllBase();
+  /* Notifica novos leads quentes */
+  const leads=window._leads||{};
+  let primeiraVez=_leadsVistos.size===0;
+  Object.entries(leads).forEach(([id,l])=>{
+    if(l.qual==='quente'&&!_leadsVistos.has(id)){
+      if(!primeiraVez) dispararNotif('🔥 Novo lead quente!',`${l.nome}${l.empresa?' · '+l.empresa:''}`);
+      _leadsVistos.add(id);
+    }
+  });
+};
+
+/* ═══ COMENTÁRIOS NO CARD ═══ */
+function adicionarComentario(leadId){
+  const inp=document.getElementById('ci-'+leadId);
+  const txt=inp?inp.value.trim():'';
+  if(!txt||!leadId)return;
+  const l=(window._leads||{})[leadId];if(!l)return;
+  const comments=[...(l.comments||[]),{
+    texto:txt,autor:window._user?.nome||'Usuário',
+    hora:new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
+  }];
+  window._update(leadId,{comments});
+  inp.value='';
+}
+
+/* Injeta comentários nos cards do pipeline após renderizar */
+const _renderPipelineBase=renderPipeline;
+function renderPipelineComComentarios(){
+  _renderPipelineBase();
+  /* Adiciona seção de comentários em cada card */
+  const leads=window._leads||{};
+  Object.entries(leads).filter(([,l])=>l.qual==='quente').forEach(([id,l])=>{
+    const cardEl=document.querySelector(`.card[data-id="${id}"] .card-body`);
+    if(!cardEl)return;
+    if(cardEl.querySelector('.comments-section'))return;
+    const comments=l.comments||[];
+    const div=document.createElement('div');
+    div.className='comments-section';
+    const list=comments.slice(-3).map(c=>`
+      <div class="comment-item">
+        <span class="comment-who">${esc(c.autor)}</span>
+        <span class="comment-txt">${esc(c.texto)}</span>
+        <span class="comment-time">${c.hora}</span>
+      </div>`).join('');
+    div.innerHTML=`${list}<div class="comment-form">
+      <input id="ci-${id}" type="text" placeholder="Comentar..." onkeydown="if(event.key==='Enter')adicionarComentario('${id}')">
+      <button onclick="adicionarComentario('${id}')">Enviar</button>
+    </div>`;
+    cardEl.appendChild(div);
+  });
+}
+window.renderPipeline=renderPipelineComComentarios;
+
+/* ═══ EXPORTAR LEADS (CSV + abre em nova janela como PDF) ═══ */
+function exportarLeads(){
+  const leads=Object.values(window._leads||{});
+  if(!leads.length){toast('Nenhum lead para exportar');return;}
+  const ETAPA_LBL={contato:'Contato feito',proposta:'Proposta enviada',negociacao:'Em negociação',ganho:'Fechado/Ganho',perdido:'Perdido',frio:'Banco de leads'};
+  const sorted=[...leads].sort((a,b)=>(b.data||0)-(a.data||0));
+
+  /* CSV com BOM para Excel reconhecer UTF-8 */
+  const header='Nome,Empresa,Telefone,Email,Cidade,Produto,Qualificação,Etapa,Observações,Data\n';
+  const rows=sorted.map(l=>[
+    `"${(l.nome||'').replace(/"/g,'""')}"`,
+    `"${(l.empresa||'').replace(/"/g,'""')}"`,
+    `"${(l.tel||'').replace(/"/g,'""')}"`,
+    `"${(l.email||'').replace(/"/g,'""')}"`,
+    `"${(l.cidade||'').replace(/"/g,'""')}"`,
+    `"${(l.produto||'').replace(/"/g,'""')}"`,
+    l.qual==='quente'?'Quente':'Frio',
+    `"${ETAPA_LBL[l.etapa]||l.etapa||''}"`,
+    `"${(l.obs||'').replace(/"/g,'""')}"`,
+    l.data?new Date(l.data).toLocaleDateString('pt-BR'):'',
+  ].join(',')).join('\n');
+  const csv='\uFEFF'+header+rows;
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`fiobras-leads-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();URL.revokeObjectURL(url);
+  toast(`✓ ${leads.length} leads exportados!`,'green');
+}
+
+let _usuarioSelecionado='';
+
+function selecionarUsuario(usuario,nome){
+  _usuarioSelecionado=usuario;
+  /* Reseta todos os cards */
+  document.querySelectorAll('.user-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.uc-check').forEach(c=>c.classList.remove('checked'));
+  /* Ativa o selecionado */
+  document.getElementById('uc-'+usuario)?.classList.add('selected');
+  document.getElementById('chk-'+usuario)?.classList.add('checked');
+  /* Mostra senha */
+  const wrap=document.getElementById('senhaWrap');
+  wrap.style.display='flex';
+  document.getElementById('loginErro').style.display='none';
+  document.getElementById('loginSenha').value='';
+  setTimeout(()=>document.getElementById('loginSenha').focus(),80);
+}
+
+function onSelectUser(){} /* compatibilidade */
+window.selecionarUsuario=selecionarUsuario;
+window.onSelectUser=onSelectUser;
 </script>
 <!-- ═══ MODAL MOVER ETAPA ═══ -->
 <div class="modal-bg" id="modalMover">
@@ -1481,6 +1938,27 @@ window.abrirPopupMover=abrirPopupMover;
   </div>
 </div>
 </div>
+<!-- ═══ BOTTOM NAV MOBILE ═══ -->
+<nav id="bottomNav" style="display:none;position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:calc(100% - 40px);max-width:300px;height:60px;background:#fff;border-radius:30px;align-items:center;justify-content:space-around;z-index:200;box-shadow:0 4px 24px rgba(0,0,0,0.10),0 1px 4px rgba(0,0,0,0.06);padding:0 8px;">
+  <button class="bnav" id="bn-dashboard" onclick="bnSwitch('dashboard',this)">
+    <div class="bnav-pill">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    </div>
+    <span class="bnav-lbl">Dashboard</span>
+  </button>
+  <button class="bnav" id="bn-pipeline" onclick="bnSwitch('pipeline',this)">
+    <div class="bnav-pill">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="18" rx="1.5"/><rect x="14" y="3" width="7" height="11" rx="1.5"/><rect x="14" y="17" width="7" height="4" rx="1.5"/></svg>
+    </div>
+    <span class="bnav-lbl">Pipeline</span>
+  </button>
+  <button class="bnav" id="bn-lista" onclick="bnSwitch('lista',this)">
+    <div class="bnav-pill">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
+    </div>
+    <span class="bnav-lbl">Leads</span>
+  </button>
+</nav>
 
 </div><!-- fim appScreen -->
 </body>
