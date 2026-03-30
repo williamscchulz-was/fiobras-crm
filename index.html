@@ -1302,7 +1302,7 @@ function salvarLead(){
   /* Suyanne só pode salvar leads no banco (frio) */
   const u=window._user?.usuario;
   if(u==='suyanne'&&_qual==='quente'){
-    toast('Você pode registrar apenas leads no banco de dados.');
+    toast('Selecione ❄ Frio para salvar no banco de leads.');
     return;
   }
   const nome=document.getElementById('f-nome').value.trim();
@@ -1465,12 +1465,11 @@ function switchView(v,btn){
   document.getElementById('view-'+v)?.classList.add('active');
   document.querySelectorAll('.bnav').forEach(b=>b.classList.remove('active'));
   document.getElementById('bn-'+v)?.classList.add('active');
-  /* FAB — só na aba Leads, mobile, e não para Suyanne */
+  /* FAB — só na aba Leads, mobile */
   const fab=document.getElementById('fabNovo');
   if(fab){
     const isMobile=window.innerWidth<=700;
-    const bloqueado=window._user?.usuario==='suyanne';
-    fab.style.display=(v==='lista'&&isMobile&&!bloqueado)?'flex':'none';
+    fab.style.display=(v==='lista'&&isMobile)?'flex':'none';
   }
   if(v==='lista')renderLista();
   if(v==='dashboard')renderDashboard();
@@ -1534,10 +1533,9 @@ function aplicarPermissoes(usuario){
   document.querySelectorAll('.bnav').forEach(b=>b.classList.remove('active'));
   document.getElementById('bn-'+telaInicial)?.classList.add('active');
 
-  /* Suyanne: só pode EDITAR banco de leads
-     Pode visualizar tudo, mas registrar/importar/editar bloqueados */
+  /* Suyanne: pode registrar leads (banco frio), mas não importar CSV */
   if(isSuyanne){
-    document.querySelector('.btn-primary')?.style.setProperty('display','none');
+    document.querySelector('.btn-primary')?.style.removeProperty('display');
     document.querySelector('.btn-import')?.style.setProperty('display','none');
   } else {
     document.querySelector('.btn-primary')?.style.removeProperty('display');
