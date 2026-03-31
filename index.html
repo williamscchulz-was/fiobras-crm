@@ -731,6 +731,56 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
   </div>
 </div>
 
+<!-- FIREBASE (antes do login para carregar usuários do banco) -->
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getDatabase,ref,onValue,push,update,remove,set,get}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const cfg={
+  apiKey:"AIzaSyCv2YsaTAj38o55M8nBbZ_3s939XWLAmM4",
+  authDomain:"fiobras-preco.firebaseapp.com",
+  databaseURL:"https://fiobras-preco-default-rtdb.firebaseio.com",
+  projectId:"fiobras-preco",
+  storageBucket:"fiobras-preco.firebasestorage.app",
+  messagingSenderId:"828256608601",
+  appId:"1:828256608601:web:8e73fde16eaa9ad5882c48"
+};
+const db=getDatabase(initializeApp(cfg));
+
+/* ── Leads ── */
+const lr=ref(db,'crm/leads');
+onValue(lr,s=>{window._leads=s.val()||{};window.renderAll&&window.renderAll();});
+window._push  =d=>push(lr,d);
+window._update=(id,d)=>update(ref(db,'crm/leads/'+id),d);
+window._remove=id=>remove(ref(db,'crm/leads/'+id));
+
+/* ── Usuários do banco de dados ── */
+const ur=ref(db,'crm/usuarios');
+
+/* ══════════════════════════════════════════════════════════════
+   ⚠️  SEED INICIAL — RODA SÓ UMA VEZ
+   Após abrir no navegador e confirmar que os usuários apareceram
+   na tela de login, substitua este arquivo pela versão LIMPA.
+   ══════════════════════════════════════════════════════════════ */
+get(ur).then(snap=>{
+  if(!snap.exists()){
+    set(ur,{
+      suyanne:{nome:'Suyanne',cargo:'Recepção',senha:'2725',papel:'user'},
+      jacques:{nome:'Jacques',cargo:'Comercial',senha:'2725',papel:'user'},
+      admin:  {nome:'Administrador',cargo:'Acesso total',senha:'admin',papel:'admin'}
+    }).then(()=>console.log('✅ Usuários criados no Firebase com sucesso!'));
+  } else {
+    console.log('✅ Usuários já existem no Firebase — seed não necessário.');
+  }
+});
+
+/* Escuta mudanças nos usuários em tempo real */
+onValue(ur,s=>{
+  window._usuarios=s.val()||{};
+  if(window._renderLoginCards) window._renderLoginCards();
+});
+</script>
+
 <!-- ═══ TELA DE LOGIN ═══ -->
 <div id="loginScreen" style="display:flex;position:fixed;inset:0;background:#f0f4f1;z-index:9000;align-items:center;justify-content:center;flex-direction:column;">
   <div style="background:#fff;border-radius:16px;padding:40px 36px;width:360px;max-width:92vw;box-shadow:0 20px 60px rgba(0,60,20,0.14);border:1px solid var(--border);">
@@ -749,23 +799,9 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
     <div style="font-size:0.88rem;font-weight:600;color:var(--text);margin-bottom:6px;font-family:'Poppins',sans-serif;">Bem-vindo de volta</div>
     <div style="font-size:0.72rem;color:var(--muted);margin-bottom:28px;font-family:'Poppins',sans-serif;">Selecione seu perfil para continuar</div>
 
-    <!-- Seletor de usuário tipo card -->
+    <!-- Seletor de usuário — carregado do banco de dados -->
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px" id="userCards">
-      <div class="user-card" onclick="selecionarUsuario('suyanne','Suyanne')" id="uc-suyanne">
-        <div class="uc-avatar">S</div>
-        <div class="uc-info"><div class="uc-nome">Suyanne</div><div class="uc-cargo">Recepção</div></div>
-        <div class="uc-check" id="chk-suyanne"></div>
-      </div>
-      <div class="user-card" onclick="selecionarUsuario('jacques','Jacques')" id="uc-jacques">
-        <div class="uc-avatar">J</div>
-        <div class="uc-info"><div class="uc-nome">Jacques</div><div class="uc-cargo">Comercial</div></div>
-        <div class="uc-check" id="chk-jacques"></div>
-      </div>
-      <div class="user-card" onclick="selecionarUsuario('admin','Admin')" id="uc-admin">
-        <div class="uc-avatar" style="background:var(--text);color:#fff">A</div>
-        <div class="uc-info"><div class="uc-nome">Administrador</div><div class="uc-cargo">Acesso total</div></div>
-        <div class="uc-check" id="chk-admin"></div>
-      </div>
+      <div style="text-align:center;padding:20px;color:var(--muted);font-size:0.75rem;font-family:'Poppins',sans-serif;">Carregando usuários...</div>
     </div>
 
     <!-- Campo senha — aparece ao selecionar -->
@@ -794,28 +830,6 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
 
 <!-- ═══ APP (só visível após login) ═══ -->
 <div id="appScreen" style="display:none">
-
-<!-- FIREBASE -->
-<script type="module">
-import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import{getDatabase,ref,onValue,push,update,remove}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
-
-const cfg={
-  apiKey:"AIzaSyCv2YsaTAj38o55M8nBbZ_3s939XWLAmM4",
-  authDomain:"fiobras-preco.firebaseapp.com",
-  databaseURL:"https://fiobras-preco-default-rtdb.firebaseio.com",
-  projectId:"fiobras-preco",
-  storageBucket:"fiobras-preco.firebasestorage.app",
-  messagingSenderId:"828256608601",
-  appId:"1:828256608601:web:8e73fde16eaa9ad5882c48"
-};
-const db=getDatabase(initializeApp(cfg));
-const lr=ref(db,'crm/leads');
-onValue(lr,s=>{window._leads=s.val()||{};window.renderAll&&window.renderAll();});
-window._push  =d=>push(lr,d);
-window._update=(id,d)=>update(ref(db,'crm/leads/'+id),d);
-window._remove=id=>remove(ref(db,'crm/leads/'+id));
-</script>
 
 <script>
 /* ═══ ESTADO ═══ */
@@ -1299,12 +1313,6 @@ function addHist(){
 
 /* SALVAR */
 function salvarLead(){
-  /* Suyanne só pode salvar leads no banco (frio) */
-  const u=window._user?.usuario;
-  if(u==='suyanne'&&_qual==='quente'){
-    toast('Selecione ❄ Frio para salvar no banco de leads.');
-    return;
-  }
   const nome=document.getElementById('f-nome').value.trim();
   if(!nome){alert('Informe o nome do contato.');return;}
   const etapaFinal=_qual==='frio'?'frio':_etapa;
@@ -1475,11 +1483,34 @@ function switchView(v,btn){
   if(v==='dashboard')renderDashboard();
 }
 
-/* ═══ LOGIN LOCAL (sem Firebase Auth) ═══ */
-const USUARIOS={
-  'admin':   {senha:'admin', nome:'Administrador', papel:'admin'},
-  'jacques': {senha:'2725',  nome:'Jacques',       papel:'user'},
-  'suyanne': {senha:'2725',  nome:'Suyanne',       papel:'user'},
+/* ═══ LOGIN VIA FIREBASE ═══ */
+
+/* Renderiza cards de usuário dinamicamente a partir do banco */
+window._renderLoginCards=function(){
+  const container=document.getElementById('userCards');
+  if(!container)return;
+  const usuarios=window._usuarios||{};
+  const keys=Object.keys(usuarios);
+  if(!keys.length){
+    container.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:0.75rem;font-family:Poppins,sans-serif;">Carregando usuários...</div>';
+    return;
+  }
+  /* Ordena: admin por último */
+  keys.sort((a,b)=>{
+    if(a==='admin')return 1;if(b==='admin')return -1;
+    return(usuarios[a].nome||a).localeCompare(usuarios[b].nome||b);
+  });
+  container.innerHTML=keys.map(k=>{
+    const u=usuarios[k];
+    const inicial=(u.nome||k).charAt(0).toUpperCase();
+    const isAdmin=u.papel==='admin';
+    const avatarStyle=isAdmin?'background:var(--text);color:#fff':'';
+    return`<div class="user-card" onclick="selecionarUsuario('${k}','${(u.nome||k).replace(/'/g,"\\'")}')" id="uc-${k}">
+      <div class="uc-avatar"${avatarStyle?' style="'+avatarStyle+'"':''}>${inicial}</div>
+      <div class="uc-info"><div class="uc-nome">${u.nome||k}</div><div class="uc-cargo">${u.cargo||u.papel||''}</div></div>
+      <div class="uc-check" id="chk-${k}"></div>
+    </div>`;
+  }).join('');
 };
 
 function fazerLogin(){
@@ -1489,7 +1520,8 @@ function fazerLogin(){
   const btn    =document.getElementById('loginBtn');
   erro.style.display='none';
 
-  const perfil=USUARIOS[usuario];
+  const usuarios=window._usuarios||{};
+  const perfil=usuarios[usuario];
   if(!perfil||perfil.senha!==senha){
     erro.textContent='Usuário ou senha incorretos.';
     erro.style.display='block';
@@ -1699,11 +1731,17 @@ const _fazerLoginBase=fazerLogin;
 window.fazerLogin=function(){
   const usuario=_usuarioSelecionado;
   const senha=document.getElementById('loginSenha').value;
-  const perfil=USUARIOS[usuario];
+  const usuarios=window._usuarios||{};
+  const perfil=usuarios[usuario];
   const erro=document.getElementById('loginErro');
   erro.style.display='none';
   if(!usuario){
     erro.textContent='Selecione seu perfil para continuar.';
+    erro.style.display='block';
+    return;
+  }
+  if(!Object.keys(usuarios).length){
+    erro.textContent='Carregando usuários... tente novamente.';
     erro.style.display='block';
     return;
   }
@@ -1755,7 +1793,7 @@ window.fazerLogout=function(){
       document.getElementById('userNome').textContent=u.nome;
       document.getElementById('userPapel').textContent=u.papel==='admin'?'Admin':'Usuário';
       document.getElementById('bottomNav').style.display='flex';
-      aplicarPermissoes(u.papel);
+      aplicarPermissoes(u.usuario);
       renderAll();
       setTimeout(initNotificacoes,1000);
     }
