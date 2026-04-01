@@ -443,131 +443,61 @@ tr:hover td{background:var(–green-ll);cursor:pointer;}
 /* LOG MOVIMENTAÇÃO NO CARD */
 .mov-log-item{font-size:0.57rem;color:var(–muted);background:var(–gray);border-radius:4px;padding:2px 7px;margin-top:4px;display:inline-block;}
 
-/* ═══ HISTÓRICO GLOBAL — NUBANK-INSPIRED ═══ */
+/* === HISTORICO GLOBAL === */
 .log-wrap{padding:0 0 48px;max-width:680px;margin:0 auto;}
-
-/* Header sticky com filtros */
 .log-header{position:sticky;top:58px;z-index:20;background:#f0f4f1;padding:20px 28px 0;}
 .log-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
 .log-title{font-size:1.05rem;font-weight:700;color:var(–text);}
 .log-count{font-family:‘DM Mono’,monospace;font-size:0.72rem;color:var(–muted);background:var(–white);border:1px solid var(–border);border-radius:20px;padding:3px 12px;}
-
-/* Search */
 .log-search-wrap{position:relative;margin-bottom:14px;}
 .log-search{width:100%;padding:12px 16px 12px 42px;border:1.5px solid var(–border);border-radius:12px;font-family:‘Poppins’,sans-serif;font-size:0.82rem;color:var(–text);background:var(–white);outline:none;transition:all 0.25s;}
 .log-search:focus{border-color:var(–green);box-shadow:0 0 0 4px rgba(0,136,53,0.08);}
 .log-search::placeholder{color:var(–gray3);}
 .log-search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(–gray3);pointer-events:none;}
-
-/* Chips de filtro */
 .log-chips{display:flex;gap:7px;overflow-x:auto;padding-bottom:16px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 .log-chips::-webkit-scrollbar{display:none;}
 .log-chip{padding:7px 16px;border-radius:20px;border:1.5px solid var(–border);background:var(–white);font-family:‘Poppins’,sans-serif;font-size:0.7rem;font-weight:600;color:var(–muted);cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;}
 .log-chip:hover{border-color:var(–green);color:var(–green);}
 .log-chip.active{background:var(–green);border-color:var(–green);color:#fff;box-shadow:0 2px 8px rgba(0,136,53,0.25);}
-.log-chip .chip-icon{margin-right:4px;}
-
-/* Timeline container */
 .log-tl{padding:0 28px;}
-
-/* Date separator */
 .log-date{display:flex;align-items:center;gap:12px;padding:24px 0 12px;}
 .log-date-text{font-size:0.65rem;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(–muted);white-space:nowrap;}
 .log-date-line{flex:1;height:1px;background:var(–gray2);}
 .log-date.hoje .log-date-text{color:var(–green);}
-
-/* Card de evento */
-.log-card{
-background:var(–white);
-border-radius:14px;
-padding:16px 18px;
-margin-bottom:10px;
-border:1px solid var(–border);
-transition:all 0.25s cubic-bezier(0.4,0,0.2,1);
-animation:logFadeIn 0.35s ease both;
-}
-.log-card:hover{
-border-color:var(–green);
-box-shadow:0 4px 20px rgba(0,100,40,0.08);
-transform:translateY(-1px);
-}
-@keyframes logFadeIn{
-from{opacity:0;transform:translateY(8px);}
-to{opacity:1;transform:translateY(0);}
-}
-
-/* Card interior layout */
+.log-card{background:var(–white);border-radius:14px;padding:16px 18px;margin-bottom:10px;border:1px solid var(–border);transition:all 0.25s cubic-bezier(0.4,0,0.2,1);}
+.log-card:hover{border-color:var(–green);box-shadow:0 4px 20px rgba(0,100,40,0.08);transform:translateY(-1px);}
 .log-card-top{display:flex;align-items:flex-start;gap:12px;}
-.log-avatar{
-width:38px;height:38px;border-radius:12px;
-display:flex;align-items:center;justify-content:center;
-flex-shrink:0;font-size:1rem;line-height:1;
-}
-.log-avatar.la-novo     {background:var(–green-l);color:var(–green);}
-.log-avatar.la-quente   {background:var(–orange-l);color:var(–orange);}
-.log-avatar.la-mover    {background:var(–blue-l);color:var(–blue);}
-.log-avatar.la-editar   {background:var(–purple-l);color:var(–purple);}
-.log-avatar.la-excluir  {background:var(–red-l);color:var(–red);}
-.log-avatar.la-importar {background:var(–yellow-l);color:#7a5800;}
-
+.log-avatar{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;line-height:1;}
+.log-avatar.la-novo{background:var(–green-l);color:var(–green);}
+.log-avatar.la-quente{background:var(–orange-l);color:var(–orange);}
+.log-avatar.la-mover{background:var(–blue-l);color:var(–blue);}
+.log-avatar.la-editar{background:var(–purple-l);color:var(–purple);}
+.log-avatar.la-excluir{background:var(–red-l);color:var(–red);}
+.log-avatar.la-importar{background:var(–yellow-l);color:#7a5800;}
 .log-card-content{flex:1;min-width:0;}
 .log-card-row1{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px;}
-.log-action-type{
-font-size:0.58rem;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;
-border-radius:5px;padding:2px 8px;line-height:1.6;
-}
-.log-action-type.at-novo     {background:var(–green-l);color:var(–green);}
-.log-action-type.at-quente   {background:var(–orange-l);color:var(–orange);}
-.log-action-type.at-mover    {background:var(–blue-l);color:#0a5090;}
-.log-action-type.at-editar   {background:var(–purple-l);color:var(–purple);}
-.log-action-type.at-excluir  {background:var(–red-l);color:var(–red);}
-.log-action-type.at-importar {background:var(–yellow-l);color:#7a5800;}
-
+.log-action-type{font-size:0.58rem;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;border-radius:5px;padding:2px 8px;line-height:1.6;}
+.log-action-type.at-novo{background:var(–green-l);color:var(–green);}
+.log-action-type.at-quente{background:var(–orange-l);color:var(–orange);}
+.log-action-type.at-mover{background:var(–blue-l);color:#0a5090;}
+.log-action-type.at-editar{background:var(–purple-l);color:var(–purple);}
+.log-action-type.at-excluir{background:var(–red-l);color:var(–red);}
+.log-action-type.at-importar{background:var(–yellow-l);color:#7a5800;}
 .log-hora{font-family:‘DM Mono’,monospace;font-size:0.62rem;color:var(–gray3);white-space:nowrap;}
-
 .log-card-desc{font-size:0.82rem;font-weight:600;color:var(–text);line-height:1.4;margin-bottom:2px;}
 .log-card-detail{font-size:0.72rem;color:var(–muted);line-height:1.4;}
 .log-card-footer{display:flex;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(–gray2);}
-.log-card-user-avatar{
-width:22px;height:22px;border-radius:50%;
-background:var(–green);color:#fff;
-font-size:0.52rem;font-weight:700;
-display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
+.log-card-user-avatar{width:22px;height:22px;border-radius:50%;background:var(–green);color:#fff;font-size:0.52rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .log-card-user-name{font-size:0.68rem;font-weight:600;color:var(–text2);}
 .log-card-ago{font-family:‘DM Mono’,monospace;font-size:0.6rem;color:var(–gray3);margin-left:auto;}
-
-/* Empty state */
-.log-empty-state{
-text-align:center;padding:60px 28px;
-}
-.log-empty-icon{
-width:72px;height:72px;border-radius:50%;
-background:var(–gray);
-display:flex;align-items:center;justify-content:center;
-margin:0 auto 18px;font-size:1.8rem;color:var(–gray3);
-}
+.log-empty-state{text-align:center;padding:60px 28px;}
+.log-empty-icon{width:72px;height:72px;border-radius:50%;background:var(–gray);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:1.4rem;color:var(–gray3);}
 .log-empty-title{font-size:0.92rem;font-weight:700;color:var(–text);margin-bottom:6px;}
 .log-empty-sub{font-size:0.75rem;color:var(–muted);line-height:1.5;max-width:280px;margin:0 auto;}
-
-/* Load more */
 .log-load-more{text-align:center;padding:20px 0 32px;}
-.log-load-more button{
-padding:10px 32px;border-radius:24px;
-border:1.5px solid var(–border);background:var(–white);
-font-family:‘Poppins’,sans-serif;font-size:0.75rem;font-weight:600;
-color:var(–muted);cursor:pointer;transition:all 0.2s;
-}
+.log-load-more button{padding:10px 32px;border-radius:24px;border:1.5px solid var(–border);background:var(–white);font-family:‘Poppins’,sans-serif;font-size:0.75rem;font-weight:600;color:var(–muted);cursor:pointer;transition:all 0.2s;}
 .log-load-more button:hover{border-color:var(–green);color:var(–green);box-shadow:0 2px 12px rgba(0,136,53,0.1);}
-
-@media(max-width:700px){
-.log-wrap{padding:0 0 100px!important;}
-.log-header{padding:14px 16px 0;top:0;}
-.log-tl{padding:0 16px;}
-.log-title{font-size:0.95rem;}
-.log-card{padding:14px 15px;border-radius:12px;}
-.log-avatar{width:34px;height:34px;border-radius:10px;font-size:0.9rem;}
-}
+@media(max-width:700px){.log-wrap{padding:0 0 100px!important;}.log-header{padding:14px 16px 0;top:0;}.log-tl{padding:0 16px;}.log-card{padding:14px 15px;border-radius:12px;}.log-avatar{width:34px;height:34px;border-radius:10px;font-size:0.9rem;}}
 
 </style>
 </head>
@@ -672,7 +602,7 @@ color:var(–muted);cursor:pointer;transition:all 0.2s;
   </button>
 </div>
 
-<!-- ═══ HISTÓRICO GLOBAL ═══ -->
+<!-- === HISTORICO GLOBAL === -->
 
 <div class="view" id="view-historico">
   <div class="log-wrap">
@@ -834,7 +764,7 @@ color:var(–muted);cursor:pointer;transition:all 0.2s;
   </div>
   <div class="modal-body">
     <div class="import-zone" id="importZone" onclick="document.getElementById('csvInput').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
-      <div class="import-zone-icon">O</div>
+      <div class="import-zone-icon">CSV</div>
       <div class="import-zone-txt">Clique para selecionar o arquivo CSV</div>
       <div class="import-zone-sub">ou arraste e solte aqui</div>
       <input type="file" id="csvInput" accept=".csv,.txt" style="display:none" onchange="processCSV(this.files[0])">
@@ -886,12 +816,11 @@ color:var(–muted);cursor:pointer;transition:all 0.2s;
   </div>
 </div>
 
-<!-- FIREBASE (antes do login para carregar usuários do banco) -->
+<!-- FIREBASE -->
 
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import{getDatabase,ref,onValue,push,update,remove,set,get}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
-
 const cfg={
   apiKey:"AIzaSyCv2YsaTAj38o55M8nBbZ_3s939XWLAmM4",
   authDomain:"fiobras-preco.firebaseapp.com",
@@ -902,45 +831,30 @@ const cfg={
   appId:"1:828256608601:web:8e73fde16eaa9ad5882c48"
 };
 const db=getDatabase(initializeApp(cfg));
-
-/* ── Leads ── */
 const lr=ref(db,'crm/leads');
 onValue(lr,s=>{window._leads=s.val()||{};window.renderAll&&window.renderAll();});
-window._push  =d=>push(lr,d);
+window._push=d=>push(lr,d);
 window._update=(id,d)=>update(ref(db,'crm/leads/'+id),d);
 window._remove=id=>remove(ref(db,'crm/leads/'+id));
-
-/* ── Log de atividades ── */
+/* Log de atividades */
 const logRef=ref(db,'crm/log');
 onValue(logRef,s=>{
   window._log=s.val()||{};
-  if(document.getElementById('view-historico')?.classList.contains('active')){
+  if(document.getElementById('view-historico')?.classList.contains('active'))
     window.renderHistoricoGlobal&&window.renderHistoricoGlobal();
-  }
 });
 window._logPush=d=>push(logRef,d);
-
-/* ── Usuários do banco de dados ── */
+/* Usuarios do Firebase */
 const ur=ref(db,'crm/usuarios');
-
-/* ══════════════════════════════════════════════════════════════
-   SEED INICIAL — RODA SÓ UMA VEZ
-   Após abrir no navegador e confirmar que os usuários apareceram
-   na tela de login, substitua este arquivo pela versão LIMPA.
-   ══════════════════════════════════════════════════════════════ */
 get(ur).then(snap=>{
   if(!snap.exists()){
     set(ur,{
       suyanne:{nome:'Suyanne',cargo:'Recepção',senha:'2725',papel:'user'},
       jacques:{nome:'Jacques',cargo:'Comercial',senha:'2725',papel:'user'},
-      admin:  {nome:'Administrador',cargo:'Acesso total',senha:'admin',papel:'admin'}
-    }).then(()=>console.log('Usuarios criados no Firebase com sucesso!'));
-  } else {
-    console.log('Usuarios ja existem no Firebase - seed nao necessario.');
+      admin:{nome:'Administrador',cargo:'Acesso total',senha:'admin',papel:'admin'}
+    });
   }
 });
-
-/* Escuta mudanças nos usuários em tempo real */
 onValue(ur,s=>{
   window._usuarios=s.val()||{};
   if(window._renderLoginCards) window._renderLoginCards();
@@ -967,9 +881,9 @@ onValue(ur,s=>{
     <div style="font-size:0.72rem;color:var(--muted);margin-bottom:28px;font-family:'Poppins',sans-serif;">Selecione seu perfil para continuar</div>
 
 ```
-<!-- Seletor de usuário — carregado do banco de dados -->
+<!-- Seletor de usuario — carregado do Firebase -->
 <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px" id="userCards">
-  <div style="text-align:center;padding:20px;color:var(--muted);font-size:0.75rem;font-family:'Poppins',sans-serif;">Carregando usuários...</div>
+  <div style="text-align:center;padding:20px;color:var(--muted);font-size:0.75rem;">Carregando...</div>
 </div>
 
 <!-- Campo senha — aparece ao selecionar -->
@@ -1502,17 +1416,14 @@ function salvarLead(){
   if(_id){
     data.historico=(window._leads||{})[_id]?.historico||[];
     window._update(_id,data);
-    logEvento('editar',`Editou lead: ${nome}`,data.produto?`Produto: ${data.produto}`:'');
+    logEvento('editar','Editou lead: '+nome,data.produto?'Produto: '+data.produto:'');
     toast('Lead atualizado.');
   }else{
     data.historico=[];
     window._push(data);
-    if(_qual==='quente'){
-      notificarEmail(data);
-      logEvento('novo_quente',`Novo lead quente: ${nome}`,`${data.empresa||'—'} · ${data.produto||'—'}`);
-    } else {
-      logEvento('novo_frio',`Novo lead frio: ${nome}`,`${data.empresa||'—'} · ${data.produto||'—'}`);
-    }
+    if(_qual==='quente') notificarEmail(data);
+    if(_qual==='quente')logEvento('novo_quente','Novo lead quente: '+nome,(data.empresa||'')+' / '+(data.produto||''));
+    else logEvento('novo_frio','Novo lead frio: '+nome,(data.empresa||'')+' / '+(data.produto||''));
     toast(_qual==='quente'?'Lead quente adicionado ao pipeline!':'Lead frio salvo no banco de leads.','green');
   }
   fecharModal();
@@ -1538,10 +1449,9 @@ function notificarEmail(lead){
 /* DELETAR */
 function deletarLead(){
   if(!_id||!confirm('Excluir este lead permanentemente?'))return;
-  const l=(window._leads||{})[_id];
-  const nome=l?.nome||'Lead';
+  const _delNome=(window._leads||{})[_id]?.nome||'Lead';
   window._remove(_id);fecharModal();
-  logEvento('excluir',`Excluiu lead: ${nome}`,l?.empresa||'');
+  logEvento('excluir','Excluiu lead: '+_delNome,'');
   toast('Lead excluído');
 }
 
@@ -1634,7 +1544,7 @@ async function confirmarImport(){
     await new Promise(r=>setTimeout(r,80));
   }
   fecharImport();
-  logEvento('importar',`Importou ${_importData.length} leads via CSV`,'');
+  logEvento('importar','Importou '+_importData.length+' leads via CSV','');
   toast(`${_importData.length} leads importados!`,'green');
   _importData=[];
 }
@@ -1655,7 +1565,7 @@ function switchView(v,btn){
   document.getElementById('view-'+v)?.classList.add('active');
   document.querySelectorAll('.bnav').forEach(b=>b.classList.remove('active'));
   document.getElementById('bn-'+v)?.classList.add('active');
-  /* FAB — só na aba Leads, mobile */
+  /* FAB — só na aba Leads, mobile, e não para Suyanne */
   const fab=document.getElementById('fabNovo');
   if(fab){
     const isMobile=window.innerWidth<=700;
@@ -1666,193 +1576,36 @@ function switchView(v,btn){
   if(v==='historico')renderHistoricoGlobal();
 }
 
-/* ═══ LOG GLOBAL DE ATIVIDADES ═══ */
-function logEvento(tipo, descricao, detalhes){
-  window._logPush&&window._logPush({
-    tipo,
-    descricao,
-    detalhes:detalhes||'',
-    usuario:window._user?.nome||'Sistema',
-    ts:Date.now()
-  });
-}
-
-const LOG_CONFIG={
-  novo_frio:  {icon:'+',cls:'la-novo',   tcls:'at-novo',   label:'Novo lead frio'},
-  novo_quente:{icon:'+',cls:'la-quente', tcls:'at-quente', label:'Lead quente'},
-  mover:      {icon:'→',cls:'la-mover',  tcls:'at-mover',  label:'Movimentação'},
-  editar:     {icon:'/',cls:'la-editar', tcls:'at-editar', label:'Edição'},
-  excluir:    {icon:'×',cls:'la-excluir',tcls:'at-excluir',label:'Exclusão'},
-  importar:   {icon:'↓',cls:'la-importar',tcls:'at-importar',label:'Importação'},
-};
-
-let _logLimit=30;
-let _logFiltro='';
-
-function setLogFiltro(tipo,btn){
-  _logFiltro=tipo;
-  _logLimit=30;
-  document.querySelectorAll('.log-chip').forEach(c=>c.classList.remove('active'));
-  if(btn)btn.classList.add('active');
-  renderHistoricoGlobal();
-}
-window.setLogFiltro=setLogFiltro;
-
-function tempoRelativo(ts){
-  const seg=Math.floor((Date.now()-ts)/1000);
-  if(seg<60) return'agora';
-  const min=Math.floor(seg/60);
-  if(min<60) return`há ${min}min`;
-  const h=Math.floor(min/60);
-  if(h<24) return`há ${h}h`;
-  const d=Math.floor(h/24);
-  if(d===1) return'ontem';
-  if(d<7) return`há ${d}d`;
-  if(d<30) return`há ${Math.floor(d/7)}sem`;
-  return`há ${Math.floor(d/30)}m`;
-}
-
-function dataSeparador(ts){
-  const dt=new Date(ts);
-  const hoje=new Date();
-  const ontem=new Date();ontem.setDate(ontem.getDate()-1);
-  const dStr=d=>d.toLocaleDateString('pt-BR');
-  if(dStr(dt)===dStr(hoje)) return{texto:'Hoje',isHoje:true};
-  if(dStr(dt)===dStr(ontem)) return{texto:'Ontem',isHoje:false};
-  /* esta semana? */
-  const diff=Math.floor((hoje-dt)/(1000*60*60*24));
-  if(diff<7) return{texto:dt.toLocaleDateString('pt-BR',{weekday:'long'}),isHoje:false};
-  return{texto:dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'}),isHoje:false};
-}
-
-function renderHistoricoGlobal(){
-  const container=document.getElementById('logTimeline');
-  if(!container)return;
-  const log=window._log||{};
-  let items=Object.entries(log).map(([k,v])=>({id:k,...v}));
-
-  /* Filtros */
-  const busca=(document.getElementById('logBusca')?.value||'').toLowerCase();
-  if(busca) items=items.filter(i=>[i.descricao,i.detalhes,i.usuario].join(' ').toLowerCase().includes(busca));
-  if(_logFiltro) items=items.filter(i=>i.tipo===_logFiltro);
-
-  /* Ordena por mais recente */
-  items.sort((a,b)=>(b.ts||0)-(a.ts||0));
-
-  /* Counter */
-  const countEl=document.getElementById('logCount');
-  if(countEl) countEl.textContent=`${items.length} registro${items.length!==1?'s':''}`;
-
-  if(!items.length){
-    container.innerHTML=`
-      <div class="log-empty-state">
-        <div class="log-empty-icon">—</div>
-        <div class="log-empty-title">${busca||_logFiltro?'Nenhum resultado':'Nenhuma atividade ainda'}</div>
-        <div class="log-empty-sub">${busca||_logFiltro?'Tente mudar os filtros ou o termo de busca.':'Quando leads forem adicionados, editados ou movidos no pipeline, a atividade aparecerá aqui.'}</div>
-      </div>`;
-    return;
-  }
-
-  const visivel=items.slice(0,_logLimit);
-  const temMais=items.length>_logLimit;
-
-  let html='';
-  let diaAtual='';
-
-  visivel.forEach((item,idx)=>{
-    const dt=new Date(item.ts);
-    const sep=dataSeparador(item.ts);
-
-    if(sep.texto!==diaAtual){
-      diaAtual=sep.texto;
-      html+=`<div class="log-date${sep.isHoje?' hoje':''}">
-        <span class="log-date-text">${sep.texto}</span>
-        <span class="log-date-line"></span>
-      </div>`;
-    }
-
-    const cfg=LOG_CONFIG[item.tipo]||{icon:'*',cls:'la-novo',tcls:'at-novo',label:item.tipo};
-    const hora=dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    const ago=tempoRelativo(item.ts);
-    const userInitial=(item.usuario||'U').charAt(0).toUpperCase();
-    const delay=Math.min(idx*0.04,0.6);
-
-    html+=`<div class="log-card" style="animation-delay:${delay}s">
-      <div class="log-card-top">
-        <div class="log-avatar ${cfg.cls}">${cfg.icon}</div>
-        <div class="log-card-content">
-          <div class="log-card-row1">
-            <span class="log-action-type ${cfg.tcls}">${cfg.label}</span>
-            <span class="log-hora">${hora}</span>
-          </div>
-          <div class="log-card-desc">${esc(item.descricao)}</div>
-          ${item.detalhes?`<div class="log-card-detail">${esc(item.detalhes)}</div>`:''}
-          <div class="log-card-footer">
-            <div class="log-card-user-avatar">${userInitial}</div>
-            <span class="log-card-user-name">${esc(item.usuario)}</span>
-            <span class="log-card-ago">${ago}</span>
-          </div>
-        </div>
-      </div>
-    </div>`;
-  });
-
-  if(temMais){
-    const restantes=items.length-_logLimit;
-    html+=`<div class="log-load-more"><button onclick="_logLimit+=30;renderHistoricoGlobal()">Carregar mais ${Math.min(restantes,30)} de ${restantes}</button></div>`;
-  }
-
-  container.innerHTML=html;
-}
-window.renderHistoricoGlobal=renderHistoricoGlobal;
-
-/* ═══ LOGIN VIA FIREBASE ═══ */
-
-/* Renderiza cards de usuário dinamicamente a partir do banco */
+/* === LOGIN VIA FIREBASE === */
 window._renderLoginCards=function(){
   const container=document.getElementById('userCards');
   if(!container)return;
   const usuarios=window._usuarios||{};
   const keys=Object.keys(usuarios);
-  if(!keys.length){
-    container.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:0.75rem;font-family:Poppins,sans-serif;">Carregando usuários...</div>';
-    return;
-  }
-  /* Ordena: admin por último */
-  keys.sort((a,b)=>{
-    if(a==='admin')return 1;if(b==='admin')return -1;
-    return(usuarios[a].nome||a).localeCompare(usuarios[b].nome||b);
-  });
+  if(!keys.length){container.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:0.75rem;">Carregando...</div>';return;}
+  keys.sort((a,b)=>{if(a==='admin')return 1;if(b==='admin')return -1;return(usuarios[a].nome||a).localeCompare(usuarios[b].nome||b);});
   container.innerHTML=keys.map(k=>{
     const u=usuarios[k];
-    const inicial=(u.nome||k).charAt(0).toUpperCase();
+    const ini=(u.nome||k).charAt(0).toUpperCase();
     const isAdmin=u.papel==='admin';
-    const avatarStyle=isAdmin?'background:var(--text);color:#fff':'';
-    return`<div class="user-card" onclick="selecionarUsuario('${k}','${(u.nome||k).replace(/'/g,"\\'")}')" id="uc-${k}">
-      <div class="uc-avatar"${avatarStyle?' style="'+avatarStyle+'"':''}>${inicial}</div>
-      <div class="uc-info"><div class="uc-nome">${u.nome||k}</div><div class="uc-cargo">${u.cargo||u.papel||''}</div></div>
-      <div class="uc-check" id="chk-${k}"></div>
-    </div>`;
+    const avStyle=isAdmin?` style="background:var(--text);color:#fff"`:'';
+    return`<div class="user-card" onclick="selecionarUsuario('${k}','${(u.nome||k).replace(/'/g,"\\'")}')" id="uc-${k}"><div class="uc-avatar"${avStyle}>${ini}</div><div class="uc-info"><div class="uc-nome">${u.nome||k}</div><div class="uc-cargo">${u.cargo||u.papel||''}</div></div><div class="uc-check" id="chk-${k}"></div></div>`;
   }).join('');
 };
 
 function fazerLogin(){
   const usuario=_usuarioSelecionado||'';
-  const senha  =document.getElementById('loginSenha').value;
-  const erro   =document.getElementById('loginErro');
-  const btn    =document.getElementById('loginBtn');
+  const senha=document.getElementById('loginSenha').value;
+  const erro=document.getElementById('loginErro');
   erro.style.display='none';
-
   const usuarios=window._usuarios||{};
   const perfil=usuarios[usuario];
   if(!perfil||perfil.senha!==senha){
-    erro.textContent='Usuário ou senha incorretos.';
+    erro.textContent='Usuario ou senha incorretos.';
     erro.style.display='block';
     document.getElementById('loginSenha').value='';
     return;
   }
-
-  /* Login OK — guarda sessão e mostra app */
   window._user={usuario,nome:perfil.nome,papel:perfil.papel};
   sessionStorage.setItem('crm_user',JSON.stringify(window._user));
   mostrarApp();
@@ -1888,7 +1641,7 @@ function aplicarPermissoes(usuario){
   document.querySelectorAll('.bnav').forEach(b=>b.classList.remove('active'));
   document.getElementById('bn-'+telaInicial)?.classList.add('active');
 
-  /* Suyanne: pode registrar leads (banco frio), mas não importar CSV */
+  /* Suyanne: pode registrar leads, nao importar CSV */
   if(isSuyanne){
     document.querySelector('.btn-primary')?.style.removeProperty('display');
     document.querySelector('.btn-import')?.style.setProperty('display','none');
@@ -2029,7 +1782,7 @@ function confirmarMover(){
   }];
   window._update(id,{etapa:etapaDestino,etapaSince:Date.now(),historico:hist});
   document.getElementById('modalMover').classList.remove('open');
-  logEvento('mover',`Moveu "${l?.nome||'lead'}" de ${ELBL[etapaOrigem]} → ${ELBL[etapaDestino]}`,obs||'');
+  logEvento('mover','Moveu "'+(l?.nome||'lead')+'" de '+ELBL[etapaOrigem]+' para '+ELBL[etapaDestino],obs||'');
   _moverPendente=null;
   toast(`Movido para "${ELBL[etapaDestino]}"`,'green');
 }
@@ -2061,11 +1814,6 @@ window.fazerLogin=function(){
   erro.style.display='none';
   if(!usuario){
     erro.textContent='Selecione seu perfil para continuar.';
-    erro.style.display='block';
-    return;
-  }
-  if(!Object.keys(usuarios).length){
-    erro.textContent='Carregando usuários... tente novamente.';
     erro.style.display='block';
     return;
   }
