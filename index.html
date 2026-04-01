@@ -652,8 +652,8 @@ color:var(–muted);cursor:pointer;transition:all 0.2s;
       </select>
       <select class="fi" id="fQual" onchange="renderLista()">
         <option value="">Todos</option>
-        <option value="quente">🔥 Quente</option>
-        <option value="frio">❄ Frio</option>
+        <option value="quente">Quente</option>
+        <option value="frio">Frio</option>
       </select>
     </div>
     <div class="table-wrap">
@@ -687,12 +687,12 @@ color:var(–muted);cursor:pointer;transition:all 0.2s;
       </div>
       <div class="log-chips" id="logChips">
         <button class="log-chip active" onclick="setLogFiltro('',this)">Tudo</button>
-        <button class="log-chip" onclick="setLogFiltro('novo_frio',this)"><span class="chip-icon">❄</span>Frios</button>
-        <button class="log-chip" onclick="setLogFiltro('novo_quente',this)"><span class="chip-icon">🔥</span>Quentes</button>
-        <button class="log-chip" onclick="setLogFiltro('mover',this)"><span class="chip-icon">→</span>Pipeline</button>
-        <button class="log-chip" onclick="setLogFiltro('editar',this)"><span class="chip-icon">✏</span>Edições</button>
-        <button class="log-chip" onclick="setLogFiltro('excluir',this)"><span class="chip-icon">✕</span>Exclusões</button>
-        <button class="log-chip" onclick="setLogFiltro('importar',this)"><span class="chip-icon">📥</span>Imports</button>
+        <button class="log-chip" onclick="setLogFiltro('novo_frio',this)">Frios</button>
+        <button class="log-chip" onclick="setLogFiltro('novo_quente',this)">Quentes</button>
+        <button class="log-chip" onclick="setLogFiltro('mover',this)">Pipeline</button>
+        <button class="log-chip" onclick="setLogFiltro('editar',this)">Edições</button>
+        <button class="log-chip" onclick="setLogFiltro('excluir',this)">Exclusões</button>
+        <button class="log-chip" onclick="setLogFiltro('importar',this)">Imports</button>
       </div>
     </div>
     <div class="log-tl" id="logTimeline"></div>
@@ -719,11 +719,11 @@ color:var(–muted);cursor:pointer;transition:all 0.2s;
 <div class="mpanel active" id="mp-dados">
   <div class="nota">
     <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#008835" stroke-width="1.5"/><path d="M8 7v4M8 5v.5" stroke="#008835" stroke-width="1.5" stroke-linecap="round"/></svg>
-    <strong>🔥 Quente</strong>&nbsp;entra direto no Pipeline.&nbsp;<strong>❄ Frio</strong>&nbsp;fica no banco de leads.
+    <strong>Quente</strong>&nbsp;entra direto no Pipeline.&nbsp;<strong>Frio</strong>&nbsp;fica no banco de leads.
   </div>
   <!-- AVISO DUPLICIDADE -->
   <div class="duplic-box" id="duplicBox">
-    <div class="duplic-title">⚠ Possível duplicidade encontrada</div>
+    <div class="duplic-title">Possível duplicidade encontrada</div>
     <div id="duplicList"></div>
   </div>
   <div class="fg2">
@@ -747,8 +747,8 @@ color:var(–muted);cursor:pointer;transition:all 0.2s;
     <div class="fld">
       <label>Qualificação *</label>
       <div class="qual-row">
-        <button class="qbtn q-frio sel" onclick="setQual('frio')">❄ Frio — banco de leads</button>
-        <button class="qbtn q-quente"   onclick="setQual('quente')">🔥 Quente — pipeline</button>
+        <button class="qbtn q-frio sel" onclick="setQual('frio')">Frio — banco de leads</button>
+        <button class="qbtn q-quente"   onclick="setQual('quente')">Quente — pipeline</button>
       </div>
     </div>
     <!-- ETAPA (só aparece se quente) -->
@@ -761,7 +761,7 @@ color:var(–muted);cursor:pointer;transition:all 0.2s;
       <textarea id="f-obs" placeholder="Contexto da conversa, necessidades, detalhes..."></textarea>
     </div>
     <div class="fld">
-      <label>📅 Próximo follow-up</label>
+      <label>Próximo follow-up</label>
       <input type="date" id="f-followup">
     </div>
   </div>
@@ -776,8 +776,8 @@ color:var(–muted);cursor:pointer;transition:all 0.2s;
   <div class="fld">
     <label>Qualificação</label>
     <div class="qual-row">
-      <button class="qbtn q-frio"   onclick="setQual('frio')">❄ Frio — banco de leads</button>
-      <button class="qbtn q-quente" onclick="setQual('quente')">🔥 Quente — pipeline</button>
+      <button class="qbtn q-frio"   onclick="setQual('frio')">Frio — banco de leads</button>
+      <button class="qbtn q-quente" onclick="setQual('quente')">Quente — pipeline</button>
     </div>
   </div>
 </div>
@@ -790,18 +790,18 @@ color:var(–muted);cursor:pointer;transition:all 0.2s;
     <!-- Tipo -->
     <div style="font-size:0.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Tipo de contato</div>
     <div class="hist-tipo-row">
-      <button class="hbtn active-whatsapp" data-tipo="whatsapp" onclick="setHTipo('whatsapp')">💬 WhatsApp</button>
-      <button class="hbtn" data-tipo="ligacao"  onclick="setHTipo('ligacao')">📞 Ligação</button>
-      <button class="hbtn" data-tipo="email"    onclick="setHTipo('email')">✉ E-mail</button>
-      <button class="hbtn" data-tipo="reuniao"  onclick="setHTipo('reuniao')">🤝 Reunião</button>
-      <button class="hbtn" data-tipo="outro"    onclick="setHTipo('outro')">· · · Outro</button>
+      <button class="hbtn active-whatsapp" data-tipo="whatsapp" onclick="setHTipo('whatsapp')">WhatsApp</button>
+      <button class="hbtn" data-tipo="ligacao"  onclick="setHTipo('ligacao')">Ligação</button>
+      <button class="hbtn" data-tipo="email"    onclick="setHTipo('email')">E-mail</button>
+      <button class="hbtn" data-tipo="reuniao"  onclick="setHTipo('reuniao')">Reunião</button>
+      <button class="hbtn" data-tipo="outro"    onclick="setHTipo('outro')">Outro</button>
     </div>
     <!-- Retorno -->
     <div style="font-size:0.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Houve retorno?</div>
     <div class="hist-retorno-row">
-      <button class="rbtn active-aguard" data-ret="aguardando" onclick="setHRet('aguardando')">⏳ Aguardando</button>
-      <button class="rbtn" data-ret="sim" onclick="setHRet('sim')">✓ Sim — houve retorno</button>
-      <button class="rbtn" data-ret="nao" onclick="setHRet('nao')">✕ Não houve retorno</button>
+      <button class="rbtn active-aguard" data-ret="aguardando" onclick="setHRet('aguardando')">Aguardando</button>
+      <button class="rbtn" data-ret="sim" onclick="setHRet('sim')">Sim — houve retorno</button>
+      <button class="rbtn" data-ret="nao" onclick="setHRet('nao')">Não houve retorno</button>
     </div>
     <!-- Observação + botão -->
     <div style="font-size:0.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Observações</div>
@@ -834,7 +834,7 @@ color:var(–muted);cursor:pointer;transition:all 0.2s;
   </div>
   <div class="modal-body">
     <div class="import-zone" id="importZone" onclick="document.getElementById('csvInput').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
-      <div class="import-zone-icon">📄</div>
+      <div class="import-zone-icon">O</div>
       <div class="import-zone-txt">Clique para selecionar o arquivo CSV</div>
       <div class="import-zone-sub">ou arraste e solte aqui</div>
       <input type="file" id="csvInput" accept=".csv,.txt" style="display:none" onchange="processCSV(this.files[0])">
@@ -924,7 +924,7 @@ window._logPush=d=>push(logRef,d);
 const ur=ref(db,'crm/usuarios');
 
 /* ══════════════════════════════════════════════════════════════
-   ⚠️  SEED INICIAL — RODA SÓ UMA VEZ
+   SEED INICIAL — RODA SÓ UMA VEZ
    Após abrir no navegador e confirmar que os usuários apareceram
    na tela de login, substitua este arquivo pela versão LIMPA.
    ══════════════════════════════════════════════════════════════ */
@@ -934,9 +934,9 @@ get(ur).then(snap=>{
       suyanne:{nome:'Suyanne',cargo:'Recepção',senha:'2725',papel:'user'},
       jacques:{nome:'Jacques',cargo:'Comercial',senha:'2725',papel:'user'},
       admin:  {nome:'Administrador',cargo:'Acesso total',senha:'admin',papel:'admin'}
-    }).then(()=>console.log('✅ Usuários criados no Firebase com sucesso!'));
+    }).then(()=>console.log('Usuarios criados no Firebase com sucesso!'));
   } else {
-    console.log('✅ Usuários já existem no Firebase — seed não necessário.');
+    console.log('Usuarios ja existem no Firebase - seed nao necessario.');
   }
 });
 
@@ -1067,8 +1067,8 @@ function renderDashboard(){
     <!-- KPIs -->
     <div class="kpi-row">
       <div class="kpi k-gray"><div class="kpi-lbl">Total de leads</div><div class="kpi-val">${tot}</div><div class="kpi-sub">registrados</div></div>
-      <div class="kpi k-orange"><div class="kpi-lbl">🔥 Quentes</div><div class="kpi-val">${quentes}</div><div class="kpi-sub">${txQ}% do total</div></div>
-      <div class="kpi k-blue"><div class="kpi-lbl">❄ Frios</div><div class="kpi-val">${frios}</div><div class="kpi-sub">banco de dados</div></div>
+      <div class="kpi k-orange"><div class="kpi-lbl">Quentes</div><div class="kpi-val">${quentes}</div><div class="kpi-sub">${txQ}% do total</div></div>
+      <div class="kpi k-blue"><div class="kpi-lbl">Frios</div><div class="kpi-val">${frios}</div><div class="kpi-sub">banco de dados</div></div>
       <div class="kpi k-green"><div class="kpi-lbl">Ganhos</div><div class="kpi-val">${ganhos}</div><div class="kpi-sub">convertidos</div></div>
       <div class="kpi k-purple"><div class="kpi-lbl">Taxa conversão</div><div class="kpi-val">${txConv}%</div><div class="kpi-sub">quentes → ganho</div></div>
       <div class="kpi k-red"><div class="kpi-lbl">Perdidos</div><div class="kpi-val">${perdidos}</div><div class="kpi-sub">não convertidos</div></div>
@@ -1120,10 +1120,10 @@ function renderDashboard(){
 
     <!-- FOLLOW-UPS HOJE/ATRASADOS -->
     <div class="dash-card" style="margin-bottom:16px;border-left:3px solid var(--orange);">
-      <div class="dash-card-title">📅 Follow-ups que precisam de atenção</div>
+      <div class="dash-card-title">Follow-ups que precisam de atenção</div>
       ${(()=>{
         const urgentes=a.filter(l=>l.followup&&diasAte(l.followup)<=2&&l.qual==='quente'&&l.etapa!=='ganho'&&l.etapa!=='perdido');
-        if(!urgentes.length) return`<div style="font-size:0.75rem;color:var(--gray3)">Nenhum follow-up urgente no momento ✓</div>`;
+        if(!urgentes.length) return`<div style="font-size:0.75rem;color:var(--gray3)">Nenhum follow-up urgente no momento.</div>`;
         return urgentes.sort((a,b)=>diasAte(a.followup)-diasAte(b.followup)).map(l=>{
           const d=diasAte(l.followup);
           const fmt=new Date(l.followup+'T00:00:00').toLocaleDateString('pt-BR');
@@ -1149,7 +1149,7 @@ function renderDashboard(){
           return`<div class="mes-box">
             <div class="mes-nome">${MESES[parseInt(mes)-1]} ${ano.slice(2)}</div>
             <div class="mes-tot">${d.tot}</div>
-            <div class="mes-q">🔥 ${d.q}</div>
+            <div class="mes-q">${d.q} quentes</div>
           </div>`;
         }).join('')}
       </div>`:`<div style="font-size:0.75rem;color:var(--gray3);padding:8px 0">Nenhum dado ainda</div>`}
@@ -1302,7 +1302,7 @@ function renderLista(){
   }).sort((a,z)=>(z[1].data||0)-(a[1].data||0));
   const rows=arr.map(([id,l])=>{
     const qt=l.qual==='quente'?'badge-q':'ep ep-frio';
-    const ql=l.qual==='quente'?'🔥 Quente':'❄ Frio';
+    const ql=l.qual==='quente'?'Quente':'Frio';
     const ec=ECLS[l.etapa]||'ep-frio';
     const el=l.qual==='frio'?'Banco de leads':ELBL[l.etapa]||'—';
     const ds=l.data?new Date(l.data).toLocaleDateString('pt-BR'):'—';
@@ -1429,7 +1429,7 @@ function hideDuplic(){document.getElementById('duplicBox').classList.remove('sho
 
 /* HIST */
 const TIPO_LBL={whatsapp:'WhatsApp',ligacao:'Ligação',email:'E-mail',reuniao:'Reunião',outro:'Outro'};
-const TIPO_ICON={whatsapp:'💬',ligacao:'📞',email:'✉',reuniao:'🤝',outro:'·'};
+const TIPO_ICON={whatsapp:'',ligacao:'',email:'',reuniao:'',outro:''};
 const RET_LBL={sim:'Houve retorno',nao:'Sem retorno',aguardando:'Aguardando'};
 let _hTipo='whatsapp', _hRet='aguardando';
 
@@ -1460,7 +1460,7 @@ function renderHist(hist){
     return`<div class="hist-item">
       <div class="hist-dot tipo-${tipo}"></div>
       <div class="hist-header">
-        <span class="hist-tipo-badge hbadge-${tipo}">${TIPO_ICON[tipo]||''} ${TIPO_LBL[tipo]||tipo}</span>
+        <span class="hist-tipo-badge hbadge-${tipo}">${TIPO_LBL[tipo]||tipo}</span>
         <span class="hist-retorno ${retCls}">${retLbl}</span>
         <span class="hist-ts">${new Date(h.ts).toLocaleString('pt-BR')}</span>
       </div>
@@ -1479,7 +1479,7 @@ function addHist(){
   document.getElementById('histInput').value='';
   // reset retorno para aguardando
   setHRet('aguardando');
-  toast('Interação registrada ✓','green');
+  toast('Interação registrada.','green');
 }
 
 /* SALVAR */
@@ -1503,7 +1503,7 @@ function salvarLead(){
     data.historico=(window._leads||{})[_id]?.historico||[];
     window._update(_id,data);
     logEvento('editar',`Editou lead: ${nome}`,data.produto?`Produto: ${data.produto}`:'');
-    toast('Lead atualizado ✓');
+    toast('Lead atualizado.');
   }else{
     data.historico=[];
     window._push(data);
@@ -1513,7 +1513,7 @@ function salvarLead(){
     } else {
       logEvento('novo_frio',`Novo lead frio: ${nome}`,`${data.empresa||'—'} · ${data.produto||'—'}`);
     }
-    toast(_qual==='quente'?'🔥 Lead quente adicionado ao pipeline!':'Lead frio salvo no banco de leads.','green');
+    toast(_qual==='quente'?'Lead quente adicionado ao pipeline!':'Lead frio salvo no banco de leads.','green');
   }
   fecharModal();
 }
@@ -1521,8 +1521,8 @@ function salvarLead(){
 /* NOTIFICAÇÃO EMAIL */
 function notificarEmail(lead){
   const etapaLbl=ELBL[lead.etapa]||'Pipeline';
-  const assunto=`🔥 Novo lead quente: ${lead.nome}`;
-  const corpo=`Olá Jacques,\n\nUm novo lead quente foi registrado no CRM da Fiobras:\n\n👤 Nome: ${lead.nome}\n🏢 Empresa: ${lead.empresa||'—'}\n📱 Telefone: ${lead.tel||'—'}\n📦 Produto: ${lead.produto||'—'}\n📍 Etapa: ${etapaLbl}\n\nAcesse o CRM para mais detalhes.\n\nFiobras CRM`;
+  const assunto=`Novo lead quente: ${lead.nome}`;
+  const corpo=`Olá Jacques,\n\nUm novo lead quente foi registrado no CRM da Fiobras:\n\nNome: ${lead.nome}\nEmpresa: ${lead.empresa||'—'}\nTelefone: ${lead.tel||'—'}\nProduto: ${lead.produto||'—'}\nEtapa: ${etapaLbl}\n\nAcesse o CRM para mais detalhes.\n\nFiobras CRM`;
   fetch('https://api.emailjs.com/api/v1.0/email/send',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -1620,7 +1620,7 @@ function processCSV(file){
       <div class="istat"><div class="istat-val gray">${lines.length-1}</div><div class="istat-lbl">Total no CSV</div></div>`;
     document.getElementById('importPreview').classList.add('show');
     document.getElementById('btnImportarConfirm').style.display=novos>0?'':'none';
-    document.getElementById('importZone').querySelector('.import-zone-txt').textContent=`✓ ${file.name} carregado`;
+    document.getElementById('importZone').querySelector('.import-zone-txt').textContent=`${file.name} carregado`;
   };
   reader.readAsText(file,'UTF-8');
 }
@@ -1635,7 +1635,7 @@ async function confirmarImport(){
   }
   fecharImport();
   logEvento('importar',`Importou ${_importData.length} leads via CSV`,'');
-  toast(`✓ ${_importData.length} leads importados!`,'green');
+  toast(`${_importData.length} leads importados!`,'green');
   _importData=[];
 }
 
@@ -1678,12 +1678,12 @@ function logEvento(tipo, descricao, detalhes){
 }
 
 const LOG_CONFIG={
-  novo_frio:  {icon:'❄️',cls:'la-novo',   tcls:'at-novo',   label:'Novo lead frio'},
-  novo_quente:{icon:'🔥',cls:'la-quente', tcls:'at-quente', label:'Lead quente'},
-  mover:      {icon:'↗', cls:'la-mover',  tcls:'at-mover',  label:'Movimentação'},
-  editar:     {icon:'✏️',cls:'la-editar', tcls:'at-editar', label:'Edição'},
-  excluir:    {icon:'🗑', cls:'la-excluir',tcls:'at-excluir',label:'Exclusão'},
-  importar:   {icon:'📥',cls:'la-importar',tcls:'at-importar',label:'Importação'},
+  novo_frio:  {icon:'+',cls:'la-novo',   tcls:'at-novo',   label:'Novo lead frio'},
+  novo_quente:{icon:'+',cls:'la-quente', tcls:'at-quente', label:'Lead quente'},
+  mover:      {icon:'→',cls:'la-mover',  tcls:'at-mover',  label:'Movimentação'},
+  editar:     {icon:'/',cls:'la-editar', tcls:'at-editar', label:'Edição'},
+  excluir:    {icon:'×',cls:'la-excluir',tcls:'at-excluir',label:'Exclusão'},
+  importar:   {icon:'↓',cls:'la-importar',tcls:'at-importar',label:'Importação'},
 };
 
 let _logLimit=30;
@@ -1746,7 +1746,7 @@ function renderHistoricoGlobal(){
   if(!items.length){
     container.innerHTML=`
       <div class="log-empty-state">
-        <div class="log-empty-icon">🕐</div>
+        <div class="log-empty-icon">—</div>
         <div class="log-empty-title">${busca||_logFiltro?'Nenhum resultado':'Nenhuma atividade ainda'}</div>
         <div class="log-empty-sub">${busca||_logFiltro?'Tente mudar os filtros ou o termo de busca.':'Quando leads forem adicionados, editados ou movidos no pipeline, a atividade aparecerá aqui.'}</div>
       </div>`;
@@ -1771,7 +1771,7 @@ function renderHistoricoGlobal(){
       </div>`;
     }
 
-    const cfg=LOG_CONFIG[item.tipo]||{icon:'●',cls:'la-novo',tcls:'at-novo',label:item.tipo};
+    const cfg=LOG_CONFIG[item.tipo]||{icon:'*',cls:'la-novo',tcls:'at-novo',label:item.tipo};
     const hora=dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     const ago=tempoRelativo(item.ts);
     const userInitial=(item.usuario||'U').charAt(0).toUpperCase();
@@ -1925,10 +1925,10 @@ function followupBadge(dataStr){
   const d=diasAte(dataStr);
   if(d===null) return '';
   const fmt=new Date(dataStr+'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
-  if(d<0)  return`<div class="fu-badge fu-atrasado">⚠ Follow-up atrasado ${Math.abs(d)}d · ${fmt}</div>`;
-  if(d===0)return`<div class="fu-badge fu-hoje">🔔 Follow-up hoje · ${fmt}</div>`;
-  if(d<=2) return`<div class="fu-badge fu-breve">📅 Follow-up em ${d}d · ${fmt}</div>`;
-  return`<div class="fu-badge fu-futuro">📅 ${fmt}</div>`;
+  if(d<0)  return`<div class="fu-badge fu-atrasado">Follow-up atrasado ${Math.abs(d)}d · ${fmt}</div>`;
+  if(d===0)return`<div class="fu-badge fu-hoje">Follow-up hoje · ${fmt}</div>`;
+  if(d<=2) return`<div class="fu-badge fu-breve">Follow-up em ${d}d · ${fmt}</div>`;
+  return`<div class="fu-badge fu-futuro">${fmt}</div>`;
 }
 
 /* ═══ TEMPO NO PIPELINE ═══ */
@@ -1941,7 +1941,7 @@ function diasNaEtapa(lead){
 function tempoBadge(lead){
   if(lead.etapa==='ganho'||lead.etapa==='perdido'||lead.qual==='frio') return '';
   const d=diasNaEtapa(lead);
-  if(d>=ALERTA_DIAS) return`<div class="tempo-badge tempo-alerta">⏱ ${d}d nesta etapa</div>`;
+  if(d>=ALERTA_DIAS) return`<div class="tempo-badge tempo-alerta">${d}d nesta etapa</div>`;
   if(d>0) return`<div class="tempo-badge tempo-ok">${d}d nesta etapa</div>`;
   return'';
 }
@@ -2031,7 +2031,7 @@ function confirmarMover(){
   document.getElementById('modalMover').classList.remove('open');
   logEvento('mover',`Moveu "${l?.nome||'lead'}" de ${ELBL[etapaOrigem]} → ${ELBL[etapaDestino]}`,obs||'');
   _moverPendente=null;
-  toast(`Movido para "${ELBL[etapaDestino]}" ✓`,'green');
+  toast(`Movido para "${ELBL[etapaDestino]}"`,'green');
 }
 
 function cancelarMover(){
@@ -2143,7 +2143,7 @@ function initNotificacoes(){
     setTimeout(()=>{
       Notification.requestPermission().then(p=>{
         _notifPerm=p;
-        if(p==='granted')dispararNotif('🔥 Fiobras CRM','Notificações ativadas!');
+        if(p==='granted')dispararNotif('Fiobras CRM','Notificações ativadas!');
       });
     },2000);
   }
@@ -2155,7 +2155,7 @@ function dispararNotif(titulo,corpo){
   try{
     if(navigator.vibrate)navigator.vibrate([200,100,200]);
     const n=new Notification(titulo,{body:corpo,
-      icon:'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%23008835'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='100' font-family='sans-serif'>🔥</text></svg>`),
+      icon:'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%23008835'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='100' font-family='sans-serif'>F</text></svg>`),
       tag:'fiobras-lead',requireInteraction:false});
     n.onclick=()=>{window.focus();n.close();};
   }catch(e){}
@@ -2170,7 +2170,7 @@ window.renderAll=function(){
   let primeiraVez=_leadsVistos.size===0;
   Object.entries(leads).forEach(([id,l])=>{
     if(l.qual==='quente'&&!_leadsVistos.has(id)){
-      if(!primeiraVez) dispararNotif('🔥 Novo lead quente!',`${l.nome}${l.empresa?' · '+l.empresa:''}`);
+      if(!primeiraVez) dispararNotif('Novo lead quente!',`${l.nome}${l.empresa?' · '+l.empresa:''}`);
       _leadsVistos.add(id);
     }
   });
@@ -2245,7 +2245,7 @@ function exportarLeads(){
   const a=document.createElement('a');
   a.href=url;a.download=`fiobras-leads-${new Date().toISOString().split('T')[0]}.csv`;
   a.click();URL.revokeObjectURL(url);
-  toast(`✓ ${leads.length} leads exportados!`,'green');
+  toast(`${leads.length} leads exportados!`,'green');
 }
 
 let _usuarioSelecionado='';
