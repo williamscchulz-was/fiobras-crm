@@ -2,6 +2,18 @@
   ╔═══════════════════════════════════════════════════════════════╗
   ║  FIOBRAS CRM — CHANGELOG                                     ║
   ╠═══════════════════════════════════════════════════════════════╣
+  ║  v2.3.0  01/04/2026  Aba Clientes — carteira pós-venda        ║
+  ║    - Nova aba "Clientes" com cards e timeline interna         ║
+  ║    - Registro de interações, negociações, preços enviados     ║
+  ║    - Auto-migração: lead Fechado vira Cliente automaticamente ║
+  ║    - Firebase path: crm/clientes                              ║
+  ║    - Fix: addEventListener null (modais fora do DOM)          ║
+  ║  v2.2.0  01/04/2026  Redesign pipeline UX                     ║
+  ║    - Etapas: Novo Lead > Retorno > Proposta > Negociação      ║
+  ║    - Botão "Avançar" no card (move pra próxima etapa)         ║
+  ║    - Botão "Perdido" com justificativa obrigatória            ║
+  ║    - Removido "Comentar" dos cards do pipeline                ║
+  ║    - Backward compat: contato→novo, ganho→fechado             ║
   ║  v2.1.0  01/04/2026  Adequação ao FIOBRAS_BASELINE v2.0      ║
   ║    - Fix: 213 var() com en-dash (–) corrigidos para (--)      ║
   ║    - Header: gradiente verde + linha tricolor + v-badge       ║
@@ -309,11 +321,19 @@ min-width:18px;height:16px;padding:0 5px;margin-left:5px;
 .col-cards{padding:8px;min-height:60px;display:flex;flex-direction:column;gap:8px;}
 .empty-col{text-align:center;padding:32px 12px;font-size:0.72rem;color:var(--gray3);}
 
-.col-contato  .col-name{color:#0b4a7a;}.col-contato  .col-bar{background:var(--blue);}
-.col-proposta .col-name{color:#6b4a00;}.col-proposta .col-bar{background:var(--yellow);}
+.col-novo     .col-name{color:#0b4a7a;}.col-novo     .col-bar{background:var(--blue);}
+.col-retorno  .col-name{color:#6b4a00;}.col-retorno  .col-bar{background:var(--yellow);}
+.col-proposta .col-name{color:var(--orange);}.col-proposta .col-bar{background:var(--orange);}
 .col-negoc    .col-name{color:#4a1f80;}.col-negoc    .col-bar{background:var(--purple);}
-.col-ganho    .col-name{color:#0a4a20;}.col-ganho    .col-bar{background:var(--green);}
+.col-fechado  .col-name{color:#0a4a20;}.col-fechado  .col-bar{background:var(--green);}
 .col-perdido  .col-name{color:var(--muted);}.col-perdido .col-bar{background:var(--gray3);}
+
+/* CARD ACTION BUTTONS */
+.card-actions{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--gray2);}
+.card-btn-avancar{flex:1;padding:7px 10px;background:var(--green);color:#fff;border:none;border-radius:7px;font-family:'Poppins',sans-serif;font-size:0.62rem;font-weight:700;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:4px;text-transform:uppercase;letter-spacing:0.5px;}
+.card-btn-avancar:hover{background:var(--green2);}
+.card-btn-perdido{padding:7px 10px;background:none;color:var(--muted);border:1.5px solid var(--border);border-radius:7px;font-family:'Poppins',sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;transition:all .18s;}
+.card-btn-perdido:hover{border-color:var(--red);color:var(--red);background:var(--red-l);}
 
 .card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:0 14px 13px;transition:box-shadow 0.18s,border-color 0.18s;position:relative;}
 .card:hover{box-shadow:0 2px 14px rgba(0,100,40,0.12);border-color:var(--green);}
@@ -350,12 +370,15 @@ td{padding:11px 16px;font-size:0.78rem;border-bottom:1px solid var(--gray2);colo
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:var(--green-ll);cursor:pointer;}
 .ep{display:inline-flex;font-size:0.6rem;font-weight:700;border-radius:5px;padding:3px 8px;text-transform:uppercase;letter-spacing:0.3px;}
-.ep-contato{background:var(--blue-l);color:#0a3d6e;}
-.ep-proposta{background:var(--yellow-l);color:#6b4a00;}
+.ep-novo{background:var(--blue-l);color:#0a3d6e;}
+.ep-retorno{background:var(--yellow-l);color:#6b4a00;}
+.ep-proposta{background:var(--orange-l);color:#8a3a00;}
 .ep-negoc{background:var(--purple-l);color:#4a1f80;}
-.ep-ganho{background:var(--green-l);color:#0a4a20;}
+.ep-fechado{background:var(--green-l);color:#0a4a20;}
 .ep-perdido{background:var(--gray2);color:var(--muted);}
 .ep-frio{background:var(--gray2);color:var(--muted);}
+.ep-contato{background:var(--blue-l);color:#0a3d6e;}
+.ep-ganho{background:var(--green-l);color:#0a4a20;}
 
 /* ═══ MODAL ═══ */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(10,30,14,0.5);z-index:500;align-items:center;justify-content:center;padding:16px;}
@@ -585,6 +608,77 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
 .log-load-more button:hover{border-color:var(--green);color:var(--green);box-shadow:0 2px 12px rgba(0,136,53,0.1);}
 @media(max-width:700px){.log-wrap{padding:0 0 100px!important;}.log-header{padding:14px 16px 0;top:0;}.log-tl{padding:0 16px;}.log-card{padding:14px 15px;border-radius:12px;}.log-avatar{width:34px;height:34px;border-radius:10px;font-size:0.9rem;}}
 
+
+/* ═══ CLIENTES ═══ */
+.cli-wrap{padding:16px 28px 48px;max-width:900px;margin:0 auto;}
+.cli-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.cli-title{font-size:1.05rem;font-weight:700;color:var(--text);}
+.cli-count{font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 12px;}
+.cli-search{width:100%;padding:10px 16px 10px 40px;border:1.5px solid var(--border);border-radius:12px;font-family:'Poppins',sans-serif;font-size:0.82rem;color:var(--text);background:var(--surface);outline:none;transition:border-color 0.2s;margin-bottom:14px;}
+.cli-search:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(0,136,53,0.08);}
+.cli-search-wrap{position:relative;}
+.cli-search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--gray3);pointer-events:none;}
+.cli-grid{display:flex;flex-direction:column;gap:12px;}
+.cli-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all 0.2s;}
+.cli-card:hover{border-color:var(--green);box-shadow:var(--shadow-md);}
+.cli-card-head{padding:16px 18px 12px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;cursor:pointer;}
+.cli-card-info{flex:1;min-width:0;}
+.cli-card-nome{font-size:0.92rem;font-weight:700;color:var(--text);margin-bottom:2px;}
+.cli-card-empresa{font-size:0.72rem;color:var(--muted);font-weight:500;}
+.cli-card-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.cli-tag{font-size:0.58rem;font-weight:700;border-radius:4px;padding:2px 8px;text-transform:uppercase;letter-spacing:0.3px;}
+.cli-tag-produto{background:var(--green-l);color:var(--green);border:1px solid #b2dfbe;}
+.cli-tag-tel{background:var(--blue-l);color:var(--blue);font-family:'DM Mono',monospace;font-weight:500;text-transform:none;letter-spacing:0;}
+.cli-card-desde{font-size:0.58rem;color:var(--gray3);font-family:'DM Mono',monospace;white-space:nowrap;}
+.cli-card-toggle{color:var(--muted);transition:transform 0.2s;}
+.cli-card-toggle.open{transform:rotate(180deg);}
+.cli-card-body{display:none;padding:0 18px 16px;border-top:1px solid var(--gray2);}
+.cli-card-body.open{display:block;}
+/* Timeline dentro do card */
+.cli-tl{margin-top:14px;}
+.cli-tl-item{border-left:2px solid var(--border);padding:0 0 16px 16px;margin-left:6px;position:relative;}
+.cli-tl-item:last-child{padding-bottom:0;}
+.cli-tl-dot{position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;border:2px solid var(--surface);}
+.cli-tl-dot.t-negociacao{background:var(--orange);}
+.cli-tl-dot.t-preco{background:var(--green);}
+.cli-tl-dot.t-visita{background:var(--purple);}
+.cli-tl-dot.t-whatsapp{background:#25d366;}
+.cli-tl-dot.t-ligacao{background:var(--blue);}
+.cli-tl-dot.t-email{background:var(--orange);}
+.cli-tl-dot.t-reuniao{background:var(--purple);}
+.cli-tl-dot.t-outro{background:var(--gray3);}
+.cli-tl-header{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px;}
+.cli-tl-badge{font-size:0.58rem;font-weight:700;border-radius:4px;padding:2px 8px;text-transform:uppercase;letter-spacing:0.3px;}
+.cli-tl-badge.b-negociacao{background:var(--orange-l);color:#8a3a00;border:1px solid #f8c99a;}
+.cli-tl-badge.b-preco{background:var(--green-l);color:var(--green);border:1px solid #b2dfbe;}
+.cli-tl-badge.b-visita{background:var(--purple-l);color:var(--purple);border:1px solid #c4a0f0;}
+.cli-tl-badge.b-whatsapp{background:#e6faf0;color:#1a9e4e;border:1px solid #a8e6c0;}
+.cli-tl-badge.b-ligacao{background:var(--blue-l);color:#0a3d6e;border:1px solid #9cc8f0;}
+.cli-tl-badge.b-email{background:var(--orange-l);color:#8a3a00;border:1px solid #f8c99a;}
+.cli-tl-badge.b-reuniao{background:var(--purple-l);color:var(--purple);border:1px solid #c4a0f0;}
+.cli-tl-badge.b-outro{background:var(--gray2);color:var(--muted);border:1px solid var(--gray3);}
+.cli-tl-valor{font-family:'DM Mono',monospace;font-size:0.7rem;font-weight:500;color:var(--green);background:var(--green-ll);border:1px solid #b2dfbe;border-radius:4px;padding:1px 7px;}
+.cli-tl-ts{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--gray3);margin-left:auto;}
+.cli-tl-txt{font-size:0.76rem;color:var(--text2);line-height:1.5;}
+.cli-tl-empty{font-size:0.75rem;color:var(--gray3);padding:12px 0;text-align:center;}
+/* Form nova interação cliente */
+.cli-form{background:var(--gray);border-radius:10px;padding:14px 16px;border:1px solid var(--gray2);margin-top:14px;}
+.cli-form-title{font-size:0.58rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.cli-tipo-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.cli-tipo-btn{padding:5px 10px;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);font-family:'Poppins',sans-serif;font-size:0.65rem;font-weight:600;cursor:pointer;color:var(--muted);transition:all 0.15s;}
+.cli-tipo-btn:hover{border-color:var(--green);color:var(--green);}
+.cli-tipo-btn.active{background:var(--green);border-color:var(--green);color:#fff;}
+.cli-form-row{display:flex;gap:8px;margin-top:6px;}
+.cli-form-row input,.cli-form-row textarea{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.78rem;outline:none;color:var(--text);background:var(--surface);}
+.cli-form-row input:focus,.cli-form-row textarea:focus{border-color:var(--green);}
+.cli-form-row button{padding:8px 16px;background:var(--green);color:#fff;border:none;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.68rem;font-weight:600;cursor:pointer;white-space:nowrap;}
+.cli-form-row button:hover{background:var(--green2);}
+.cli-valor-field{display:none;margin-bottom:8px;}
+.cli-valor-field.show{display:flex;gap:8px;align-items:center;}
+.cli-valor-field label{font-size:0.58rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;white-space:nowrap;}
+.cli-valor-field input{width:140px;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--green);outline:none;background:var(--surface);}
+@media(max-width:700px){.cli-wrap{padding:10px 12px 100px!important;}.cli-card-head{padding:14px 14px 10px;}}
+
 /* ── Splash animation ── */
 @keyframes splashLoad{0%{width:0}60%{width:75%}100%{width:100%}}
 /* ── Reduced motion ── */
@@ -603,7 +697,7 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
       <path d="M26 6 Q30 6 32 10" stroke="#FFCB00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
     </svg>
     <div><div class="logo-text">Fiobras</div><div class="logo-crm">CRM de Vendas</div></div>
-    <span class="version-badge">v2.1</span>
+    <span class="version-badge">v2.3</span>
   </div>
   <div class="header-actions">
     <div class="header-user">
@@ -638,6 +732,7 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
   <button class="tab active" onclick="switchView('dashboard',this)">Dashboard</button>
   <button class="tab tab-comercial" onclick="switchView('pipeline',this)">Pipeline <span class="tab-badge" id="badge-pipeline">0</span></button>
   <button class="tab tab-comercial" onclick="switchView('lista',this)">Banco de Leads <span class="tab-badge gray" id="badge-lista">0</span></button>
+  <button class="tab" onclick="switchView('clientes',this)">Clientes <span class="tab-badge" id="badge-clientes" style="background:var(--green-l);color:var(--green)">0</span></button>
   <button class="tab" onclick="switchView('historico',this)">Histórico</button>
 </div>
 
@@ -652,11 +747,12 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
 <div class="view" id="view-pipeline">
   <!-- Seletor de etapa mobile — tabs horizontais scrolláveis -->
   <div class="pipeline-stage-nav" id="pipelineStageNav">
-    <button class="psnav active" data-etapa="contato"    onclick="setPipelineEtapa('contato',this)">Contato</button>
-    <button class="psnav"         data-etapa="proposta"   onclick="setPipelineEtapa('proposta',this)">Proposta</button>
-    <button class="psnav"         data-etapa="negociacao" onclick="setPipelineEtapa('negociacao',this)">Negociação</button>
-    <button class="psnav"         data-etapa="ganho"      onclick="setPipelineEtapa('ganho',this)">Ganhos</button>
-    <button class="psnav"         data-etapa="perdido"    onclick="setPipelineEtapa('perdido',this)">Perdidos</button>
+    <button class="psnav active" data-etapa="novo"       onclick="setPipelineEtapa('novo',this)">Novo Lead</button>
+    <button class="psnav"        data-etapa="retorno"    onclick="setPipelineEtapa('retorno',this)">Retorno</button>
+    <button class="psnav"        data-etapa="proposta"   onclick="setPipelineEtapa('proposta',this)">Proposta</button>
+    <button class="psnav"        data-etapa="negociacao" onclick="setPipelineEtapa('negociacao',this)">Negociação</button>
+    <button class="psnav"        data-etapa="fechado"    onclick="setPipelineEtapa('fechado',this)">Fechados</button>
+    <button class="psnav"        data-etapa="perdido"    onclick="setPipelineEtapa('perdido',this)">Perdidos</button>
   </div>
   <!-- Desktop: colunas lado a lado | Mobile: uma coluna por vez -->
   <div class="pipeline-wrap"><div class="pipeline" id="pipeline"></div></div>
@@ -670,10 +766,11 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
       <input class="fi" type="text" id="busca" placeholder="Buscar nome, empresa, telefone..." oninput="renderLista()">
       <select class="fi" id="fEtapa" onchange="renderLista()">
         <option value="">Todas as etapas</option>
-        <option value="contato">Contato feito</option>
-        <option value="proposta">Proposta enviada</option>
-        <option value="negociacao">Em negociação</option>
-        <option value="ganho">Fechado/Ganho</option>
+        <option value="novo">Novo Lead</option>
+        <option value="retorno">Retorno Feito</option>
+        <option value="proposta">Proposta Enviada</option>
+        <option value="negociacao">Negociação</option>
+        <option value="fechado">Fechado</option>
         <option value="perdido">Perdido</option>
         <option value="frio">Frio (banco)</option>
       </select>
@@ -697,6 +794,23 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
   <button id="fabNovo" onclick="abrirNovo()" style="display:none;position:fixed;bottom:calc(88px + env(safe-area-inset-bottom));right:20px;width:52px;height:52px;background:var(--green);border:none;border-radius:50%;box-shadow:0 4px 20px rgba(0,136,53,0.4);cursor:pointer;align-items:center;justify-content:center;z-index:150;">
     <svg width="22" height="22" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
   </button>
+</div>
+
+
+<!-- ═══ CLIENTES ═══ -->
+
+<div class="view" id="view-clientes">
+  <div class="cli-wrap">
+    <div class="cli-header">
+      <div class="cli-title">Carteira de Clientes</div>
+      <div class="cli-count" id="cliCount">0 clientes</div>
+    </div>
+    <div class="cli-search-wrap">
+      <svg class="cli-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+      <input class="cli-search" type="text" id="cliBusca" placeholder="Buscar cliente, empresa, produto..." oninput="renderClientes()">
+    </div>
+    <div class="cli-grid" id="cliGrid"></div>
+  </div>
 </div>
 
 <!-- === HISTORICO GLOBAL === -->
@@ -906,7 +1020,7 @@ tr:hover td{background:var(--green-ll);cursor:pointer;}
     <div style="width:120px;height:2.5px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden">
       <div id="splash-bar" style="height:100%;width:0%;background:rgba(255,255,255,.8);border-radius:3px;animation:splashLoad 2.2s ease-in-out forwards"></div>
     </div>
-    <div style="font-family:'DM Mono',monospace;font-size:.5rem;color:rgba(255,255,255,.3);letter-spacing:2px">v2.1</div>
+    <div style="font-family:'DM Mono',monospace;font-size:.5rem;color:rgba(255,255,255,.3);letter-spacing:2px">v2.3</div>
   </div>
 </div>
 
@@ -938,6 +1052,19 @@ onValue(logRef,s=>{
     window.renderHistoricoGlobal&&window.renderHistoricoGlobal();
 });
 window._logPush=d=>push(logRef,d);
+/* Clientes */
+const cliRef=ref(db,'crm/clientes');
+onValue(cliRef,s=>{
+  window._clientes=s.val()||{};
+  if(document.getElementById('view-clientes')?.classList.contains('active'))
+    window.renderClientes&&window.renderClientes();
+  /* Atualiza badge */
+  const badge=document.getElementById('badge-clientes');
+  if(badge) badge.textContent=Object.keys(window._clientes||{}).length;
+});
+window._cliPush=d=>push(cliRef,d);
+window._cliUpdate=(id,d)=>update(ref(db,'crm/clientes/'+id),d);
+window._cliRemove=id=>remove(ref(db,'crm/clientes/'+id));
 /* Usuarios do Firebase */
 const ur=ref(db,'crm/usuarios');
 get(ur).then(snap=>{
@@ -1009,24 +1136,28 @@ onValue(ur,s=>{
 
 <script>
 /* ═══ ESTADO ═══ */
-let _id=null,_qual='frio',_etapa='contato';
+let _id=null,_qual='frio',_etapa='novo';
 let _importData=[];
 
-const ETAPAS=[
-  {key:'contato',  label:'Contato feito'},
-  {key:'proposta', label:'Proposta enviada'},
-  {key:'negociacao',label:'Em negociação'},
-  {key:'ganho',    label:'Fechado/Ganho'},
-  {key:'perdido',  label:'Perdido'},
+const ETAPAS_PIPELINE=[
+  {key:'novo',      label:'Novo Lead'},
+  {key:'retorno',   label:'Retorno Feito'},
+  {key:'proposta',  label:'Proposta Enviada'},
+  {key:'negociacao',label:'Negociação'},
+  {key:'fechado',   label:'Fechado'},
 ];
-const ECLS={contato:'ep-contato',proposta:'ep-proposta',negociacao:'ep-negoc',ganho:'ep-ganho',perdido:'ep-perdido'};
-const ELBL={contato:'Contato feito',proposta:'Proposta enviada',negociacao:'Em negociação',ganho:'Fechado/Ganho',perdido:'Perdido'};
-const CCLS={contato:'col-contato',proposta:'col-proposta',negociacao:'col-negoc',ganho:'col-ganho',perdido:'col-perdido'};
+const ETAPAS=[...ETAPAS_PIPELINE,{key:'perdido',label:'Perdido'}];
+const PROX_ETAPA={novo:'retorno',retorno:'proposta',proposta:'negociacao',negociacao:'fechado'};
+const ECLS={novo:'ep-novo',retorno:'ep-retorno',proposta:'ep-proposta',negociacao:'ep-negoc',fechado:'ep-fechado',perdido:'ep-perdido',contato:'ep-novo',ganho:'ep-fechado'};
+const ELBL={novo:'Novo Lead',retorno:'Retorno Feito',proposta:'Proposta Enviada',negociacao:'Negociação',fechado:'Fechado',perdido:'Perdido',contato:'Novo Lead',ganho:'Fechado'};
+const CCLS={novo:'col-novo',retorno:'col-retorno',proposta:'col-proposta',negociacao:'col-negoc',fechado:'col-fechado',perdido:'col-perdido',contato:'col-novo',ganho:'col-fechado'};
+const MOTIVOS_PERDIDO=['Sem retorno após tentativas','Cliente escolheu concorrente','Preço fora do orçamento','Projeto cancelado pelo cliente','Produto não atende necessidade','Prazo incompatível'];
 const MESES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
 window.renderAll=()=>{
   renderPipeline();renderLista();
   if(document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
+  if(document.getElementById('view-clientes')?.classList.contains('active')) renderClientes();
 };
 
 /* ═══ DASHBOARD ═══ */
@@ -1035,12 +1166,13 @@ function renderDashboard(){
   const tot    =a.length;
   const quentes=a.filter(l=>l.qual==='quente').length;
   const frios  =a.filter(l=>l.qual==='frio').length;
-  const ganhos =a.filter(l=>l.etapa==='ganho').length;
+  const fechados=a.filter(l=>l.etapa==='fechado'||l.etapa==='ganho').length;
   const perdidos=a.filter(l=>l.etapa==='perdido').length;
   const emNeg  =a.filter(l=>l.etapa==='negociacao').length;
   const proposta=a.filter(l=>l.etapa==='proposta').length;
-  const contato=a.filter(l=>l.etapa==='contato').length;
-  const txConv =quentes>0?((ganhos/quentes)*100).toFixed(1):'0.0';
+  const retorno=a.filter(l=>l.etapa==='retorno').length;
+  const novo   =a.filter(l=>l.etapa==='novo'||l.etapa==='contato').length;
+  const txConv =quentes>0?((fechados/quentes)*100).toFixed(1):'0.0';
   const txQ    =tot>0?((quentes/tot)*100).toFixed(1):'0.0';
 
   // Por mês
@@ -1061,11 +1193,12 @@ function renderDashboard(){
   const maxP=prods[0]?.[1]||1;
 
   const funil=[
-    {l:'Total de contatos',v:tot,     c:'#008835'},
-    {l:'Leads quentes',   v:quentes,  c:'#d4620a'},
-    {l:'Proposta enviada',v:proposta, c:'#7c5500'},
-    {l:'Em negociação',   v:emNeg,    c:'#6b35b8'},
-    {l:'Fechados/Ganhos', v:ganhos,   c:'#0a4a20'},
+    {l:'Total de leads',   v:tot,      c:'#008835'},
+    {l:'Leads quentes',    v:quentes,  c:'#d4620a'},
+    {l:'Retorno feito',    v:retorno,  c:'#7c5500'},
+    {l:'Proposta enviada', v:proposta, c:'var(--orange)'},
+    {l:'Negociação',       v:emNeg,    c:'#6b35b8'},
+    {l:'Fechados',         v:fechados, c:'#0a4a20'},
   ];
 
   document.getElementById('dashWrap').innerHTML=`
@@ -1074,8 +1207,8 @@ function renderDashboard(){
       <div class="kpi k-gray"><div class="kpi-lbl">Total de leads</div><div class="kpi-val">${tot}</div><div class="kpi-sub">registrados</div></div>
       <div class="kpi k-orange"><div class="kpi-lbl">Quentes</div><div class="kpi-val">${quentes}</div><div class="kpi-sub">${txQ}% do total</div></div>
       <div class="kpi k-blue"><div class="kpi-lbl">Frios</div><div class="kpi-val">${frios}</div><div class="kpi-sub">banco de dados</div></div>
-      <div class="kpi k-green"><div class="kpi-lbl">Ganhos</div><div class="kpi-val">${ganhos}</div><div class="kpi-sub">convertidos</div></div>
-      <div class="kpi k-purple"><div class="kpi-lbl">Taxa conversão</div><div class="kpi-val">${txConv}%</div><div class="kpi-sub">quentes → ganho</div></div>
+      <div class="kpi k-green"><div class="kpi-lbl">Fechados</div><div class="kpi-val">${fechados}</div><div class="kpi-sub">convertidos</div></div>
+      <div class="kpi k-purple"><div class="kpi-lbl">Taxa conversão</div><div class="kpi-val">${txConv}%</div><div class="kpi-sub">quentes → fechado</div></div>
       <div class="kpi k-red"><div class="kpi-lbl">Perdidos</div><div class="kpi-val">${perdidos}</div><div class="kpi-sub">não convertidos</div></div>
     </div>
 
@@ -1114,12 +1247,13 @@ function renderDashboard(){
     <div class="dash-card" style="margin-bottom:16px">
       <div class="dash-card-title">Status do pipeline (leads quentes)</div>
       <div class="etapa-mini-grid">
-        <div class="etapa-mini"><span class="em-lbl">Contato feito</span><span class="em-val" style="color:var(--blue)">${contato}</span></div>
-        <div class="etapa-mini"><span class="em-lbl">Proposta enviada</span><span class="em-val" style="color:#7c5500">${proposta}</span></div>
-        <div class="etapa-mini"><span class="em-lbl">Em negociação</span><span class="em-val" style="color:var(--purple)">${emNeg}</span></div>
-        <div class="etapa-mini"><span class="em-lbl">Fechado/Ganho</span><span class="em-val" style="color:var(--green)">${ganhos}</span></div>
+        <div class="etapa-mini"><span class="em-lbl">Novo Lead</span><span class="em-val" style="color:var(--blue)">${novo}</span></div>
+        <div class="etapa-mini"><span class="em-lbl">Retorno Feito</span><span class="em-val" style="color:#7c5500">${retorno}</span></div>
+        <div class="etapa-mini"><span class="em-lbl">Proposta Enviada</span><span class="em-val" style="color:var(--orange)">${proposta}</span></div>
+        <div class="etapa-mini"><span class="em-lbl">Negociação</span><span class="em-val" style="color:var(--purple)">${emNeg}</span></div>
+        <div class="etapa-mini"><span class="em-lbl">Fechado</span><span class="em-val" style="color:var(--green)">${fechados}</span></div>
         <div class="etapa-mini"><span class="em-lbl">Perdido</span><span class="em-val" style="color:var(--gray3)">${perdidos}</span></div>
-        <div class="etapa-mini"><span class="em-lbl">Taxa de conversão</span><span class="em-val" style="color:var(--green)">${txConv}%</span></div>
+        <div class="etapa-mini" style="grid-column:1/-1"><span class="em-lbl">Taxa de conversão</span><span class="em-val" style="color:var(--green)">${txConv}%</span></div>
       </div>
     </div>
 
@@ -1127,7 +1261,7 @@ function renderDashboard(){
     <div class="dash-card" style="margin-bottom:16px;border-left:3px solid var(--orange);">
       <div class="dash-card-title">Follow-ups que precisam de atenção</div>
       ${(()=>{
-        const urgentes=a.filter(l=>l.followup&&diasAte(l.followup)<=2&&l.qual==='quente'&&l.etapa!=='ganho'&&l.etapa!=='perdido');
+        const urgentes=a.filter(l=>l.followup&&diasAte(l.followup)<=2&&l.qual==='quente'&&l.etapa!=='fechado'&&l.etapa!=='ganho'&&l.etapa!=='perdido');
         if(!urgentes.length) return`<div style="font-size:0.75rem;color:var(--gray3)">Nenhum follow-up urgente no momento.</div>`;
         return urgentes.sort((a,b)=>diasAte(a.followup)-diasAte(b.followup)).map(l=>{
           const d=diasAte(l.followup);
@@ -1163,7 +1297,7 @@ function renderDashboard(){
 
 /* ═══ PIPELINE + DRAG & DROP ═══ */
 let _dragId=null;
-let _etapaAtivaMobile='contato';
+let _etapaAtivaMobile='novo';
 
 function setPipelineEtapa(etapa,btn){
   _etapaAtivaMobile=etapa;
@@ -1180,18 +1314,24 @@ window.setPipelineEtapa=setPipelineEtapa;
 function renderPipeline(){
   const leads=window._leads||{};
   const quentes=Object.entries(leads).filter(([,l])=>l.qual==='quente');
+  /* Backward compat: map old keys */
+  const mapEtapa=e=>e==='contato'?'novo':e==='ganho'?'fechado':e;
   let html='';
   ETAPAS.forEach(e=>{
-    const cards=quentes.filter(([,l])=>l.etapa===e.key);
+    const cards=quentes.filter(([,l])=>mapEtapa(l.etapa)===e.key);
     const isMobileAtiva=e.key===_etapaAtivaMobile;
     html+=`<div class="col ${CCLS[e.key]}${isMobileAtiva?' mobile-ativa':''}" data-etapa="${e.key}">
       <div class="col-head"><span class="col-name">${e.label}</span><span class="col-cnt">${cards.length}</span></div>
       <div class="col-bar"></div>
       <div class="col-cards" data-etapa="${e.key}">`;
     if(!cards.length) html+=`<div class="empty-col">Nenhum lead nesta etapa</div>`;
-    cards.forEach(([id,l])=>{
+    cards.sort((a,b)=>(b[1].data||0)-(a[1].data||0)).forEach(([id,l])=>{
       const last=l.historico?.length?l.historico[l.historico.length-1].texto:null;
-      const ds=l.data?new Date(l.data).toLocaleDateString('pt-BR'):'—';
+      const ds=l.data?new Date(l.data).toLocaleDateString('pt-BR'):'--';
+      const curEtapa=mapEtapa(l.etapa);
+      const prox=PROX_ETAPA[curEtapa];
+      const proxLbl=prox?ELBL[prox]:'';
+      const isFinal=curEtapa==='fechado'||curEtapa==='perdido';
       html+=`<div class="card" data-id="${id}">
         <div class="card-handle" data-id="${id}">
           <div class="handle-icon">
@@ -1202,17 +1342,23 @@ function renderPipeline(){
           <span class="handle-txt">arraste para mover</span>
         </div>
         <div class="card-body" data-id="${id}">
-          <div class="card-head"><span class="card-name">${esc(l.nome)}</span><span class="badge-q">Quente</span></div>
+          <div class="card-head"><span class="card-name">${esc(l.nome)}</span></div>
           ${l.empresa?`<div class="card-empresa">${esc(l.empresa)}</div>`:'<div style="height:4px"></div>'}
           ${l.produto?`<div><span class="card-produto">${esc(l.produto)}</span></div>`:''}
           <div class="card-meta">
             <div class="meta-item"><span class="meta-lbl">Entrada</span><span class="meta-val">${ds}</span></div>
-            <div class="meta-item"><span class="meta-lbl">Telefone</span><span class="meta-val blue">${esc(l.tel||'—')}</span></div>
-            <div class="meta-item" style="grid-column:1/-1"><span class="meta-lbl">Última interação</span><span class="meta-val">${last?esc(last.substring(0,65))+(last.length>65?'…':''):'Nenhuma ainda'}</span></div>
+            <div class="meta-item"><span class="meta-lbl">Telefone</span><span class="meta-val blue">${esc(l.tel||'--')}</span></div>
+            ${last?`<div class="meta-item" style="grid-column:1/-1"><span class="meta-lbl">Última interação</span><span class="meta-val">${esc(last.substring(0,55))+(last.length>55?'...':'')}</span></div>`:''}
           </div>
           ${tempoBadge(l)}
           ${followupBadge(l.followup)}
         </div>
+        ${!isFinal?`<div class="card-actions">
+          ${prox?`<button class="card-btn-avancar" onclick="event.stopPropagation();avançarLead('${id}')" title="Mover para ${proxLbl}">
+            ${proxLbl} <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 1l4 4-4 4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>`:''}
+          <button class="card-btn-perdido" onclick="event.stopPropagation();abrirPerdido('${id}')" title="Marcar como perdido">Perdido</button>
+        </div>`:''}
       </div>`;
     });
     html+=`</div></div>`;
@@ -1224,8 +1370,7 @@ function renderPipeline(){
   /* Atualiza contadores no nav mobile */
   document.querySelectorAll('.psnav').forEach(btn=>{
     const etapa=btn.dataset.etapa;
-    const cnt=quentes.filter(([,l])=>l.etapa===etapa).length;
-    /* Remove contador antigo */
+    const cnt=quentes.filter(([,l])=>mapEtapa(l.etapa)===etapa).length;
     btn.querySelectorAll('.psnav-cnt').forEach(el=>el.remove());
     if(cnt>0){
       const sp=document.createElement('span');
@@ -1298,19 +1443,20 @@ function renderLista(){
   const b=(document.getElementById('busca')?.value||'').toLowerCase();
   const fe=document.getElementById('fEtapa')?.value||'';
   const fq=document.getElementById('fQual')?.value||'';
+  const mapE=e=>e==='contato'?'novo':e==='ganho'?'fechado':e;
   let arr=Object.entries(leads).filter(([,l])=>{
     if(b&&![(l.nome||''),(l.empresa||''),(l.tel||'')].join(' ').toLowerCase().includes(b))return false;
     if(fe==='frio'&&l.qual!=='frio')return false;
-    if(fe&&fe!=='frio'&&l.etapa!==fe)return false;
+    if(fe&&fe!=='frio'&&mapE(l.etapa)!==fe)return false;
     if(fq&&l.qual!==fq)return false;
     return true;
   }).sort((a,z)=>(z[1].data||0)-(a[1].data||0));
   const rows=arr.map(([id,l])=>{
     const qt=l.qual==='quente'?'badge-q':'ep ep-frio';
     const ql=l.qual==='quente'?'Quente':'Frio';
-    const ec=ECLS[l.etapa]||'ep-frio';
-    const el=l.qual==='frio'?'Banco de leads':ELBL[l.etapa]||'—';
-    const ds=l.data?new Date(l.data).toLocaleDateString('pt-BR'):'—';
+    const ec=ECLS[mapE(l.etapa)]||ECLS[l.etapa]||'ep-frio';
+    const el=l.qual==='frio'?'Banco de leads':(ELBL[mapE(l.etapa)]||ELBL[l.etapa]||'--');
+    const ds=l.data?new Date(l.data).toLocaleDateString('pt-BR'):'--';
     return`<tr onclick="abrirLead('${id}')">
       <td style="font-weight:600">${esc(l.nome)}</td>
       <td>${esc(l.empresa||'—')}</td>
@@ -1395,10 +1541,12 @@ function syncQual(){
 /* ETAPA GRIDS */
 function setEtapa(e){_etapa=e;buildGrids();}
 function buildGrids(){
-  ['etapaGrid','etapaGrid2'].forEach(gid=>{
-    const g=document.getElementById(gid);if(!g)return;
-    g.innerHTML=ETAPAS.map(e=>`<button class="ebtn${_etapa===e.key?' active':''}" onclick="setEtapa('${e.key}')">${e.label}</button>`).join('');
-  });
+  /* etapaGrid (novo lead) — só pipeline, sem perdido */
+  const g1=document.getElementById('etapaGrid');
+  if(g1) g1.innerHTML=ETAPAS_PIPELINE.map(e=>`<button class="ebtn${_etapa===e.key?' active':''}" onclick="setEtapa('${e.key}')">${e.label}</button>`).join('');
+  /* etapaGrid2 (editar/mover) — todas */
+  const g2=document.getElementById('etapaGrid2');
+  if(g2) g2.innerHTML=ETAPAS.map(e=>`<button class="ebtn${_etapa===e.key?' active':''}" onclick="setEtapa('${e.key}')">${e.label}</button>`).join('');
 }
 
 /* DUPLICIDADE */
@@ -1491,7 +1639,7 @@ function addHist(){
 function salvarLead(){
   const nome=document.getElementById('f-nome').value.trim();
   if(!nome){alert('Informe o nome do contato.');return;}
-  const etapaFinal=_qual==='frio'?'frio':_etapa;
+  const etapaFinal=_qual==='frio'?'frio':(_etapa||'novo');
   const data={
     nome,qual:_qual,etapa:etapaFinal,
     empresa:document.getElementById('f-empresa').value.trim(),
@@ -1609,7 +1757,7 @@ function processCSV(file){
                   (emp&&empExist.has(emp.toLowerCase()));
       if(isDup){duplicados++;return;}
 
-      _importData.push({nome,tel,empresa:emp,produto:prod,qual,etapa:qual==='quente'?'contato':'frio',data:Date.now(),historico:[]});
+      _importData.push({nome,tel,empresa:emp,produto:prod,qual,etapa:qual==='quente'?'novo':'frio',data:Date.now(),historico:[]});
       novos++;
     });
 
@@ -1665,6 +1813,7 @@ function switchView(v,btn){
   if(v==='lista')renderLista();
   if(v==='dashboard')renderDashboard();
   if(v==='historico')renderHistoricoGlobal();
+  if(v==='clientes')renderClientes();
 }
 
 /* === LOGIN VIA FIREBASE === */
@@ -1790,9 +1939,6 @@ function tempoBadge(lead){
   return'';
 }
 
-document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))fecharModal();});
-document.getElementById('modalImport').addEventListener('click',e=>{if(e.target===document.getElementById('modalImport'))fecharImport();});
-
 window.addEventListener('DOMContentLoaded',()=>{
   window._leads={};
   buildGrids();
@@ -1803,6 +1949,11 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('appScreen').style.display='none';
   /* Foca no campo usuário */
   setTimeout(()=>document.getElementById('loginSenha')?.focus(),100);
+  /* Modal click-to-close (precisa do DOM pronto) */
+  document.getElementById('modal')?.addEventListener('click',e=>{if(e.target===document.getElementById('modal'))fecharModal();});
+  document.getElementById('modalImport')?.addEventListener('click',e=>{if(e.target===document.getElementById('modalImport'))fecharImport();});
+  document.getElementById('modalPerdido')?.addEventListener('click',e=>{if(e.target===document.getElementById('modalPerdido'))cancelarPerdido();});
+  document.getElementById('modalMover')?.addEventListener('click',e=>{if(e.target===document.getElementById('modalMover'))cancelarMover();});
 });
 
 window.abrirNovo=abrirNovo;window.abrirLead=abrirLead;window.fecharModal=fecharModal;
@@ -1817,11 +1968,11 @@ window.setHTipo=setHTipo;window.setHRet=setHRet;
 let _moverPendente=null; // {id, etapaOrigem, etapaDestino}
 
 const SUGESTOES_ETAPA={
-  contato: ['Primeiro contato realizado','Enviou mensagem no WhatsApp','Ligação atendida','Agendou conversa'],
-  proposta:['Proposta enviada por e-mail','Proposta enviada por WhatsApp','Cliente pediu orçamento','Enviou ficha técnica'],
+  novo:      ['Cliente entrou em contato','Indicação recebida','Encontro em feira/evento','Solicitação via site'],
+  retorno:   ['Retornamos por WhatsApp','Ligação realizada','E-mail de apresentação enviado','Agendou conversa'],
+  proposta:  ['Proposta enviada por e-mail','Proposta enviada por WhatsApp','Enviou ficha técnica','Cliente pediu orçamento'],
   negociacao:['Cliente analisando proposta','Negociando valores','Aguardando aprovação interna','Contraproposta recebida'],
-  ganho:   ['Pedido confirmado','Contrato assinado','Pagamento realizado','Cliente aprovou proposta'],
-  perdido: ['Sem retorno após tentativas','Cliente escolheu concorrente','Preço fora do orçamento','Projeto cancelado pelo cliente'],
+  fechado:   ['Pedido confirmado','Contrato assinado','Pagamento realizado','Cliente aprovou proposta'],
 };
 
 function abrirPopupMover(id, etapaOrigem, etapaDestino){
@@ -1981,6 +2132,15 @@ window.fazerLogout=function(){
       aplicarPermissoes(u.usuario);
       renderAll();
       setTimeout(initNotificacoes,1000);
+      /* Migra leads fechados existentes para clientes (uma vez) */
+      setTimeout(()=>{
+        const leads=window._leads||{};
+        Object.entries(leads).forEach(([id,l])=>{
+          if((l.etapa==='fechado'||l.etapa==='ganho')&&l.qual==='quente'){
+            migrarParaCliente(id);
+          }
+        });
+      },2000);
     }
   }catch(e){}
 })();
@@ -2037,53 +2197,268 @@ window.renderAll=function(){
   });
 };
 
-/* ═══ COMENTÁRIOS NO CARD ═══ */
-function adicionarComentario(leadId){
-  const inp=document.getElementById('ci-'+leadId);
-  const txt=inp?inp.value.trim():'';
-  if(!txt||!leadId)return;
-  const l=(window._leads||{})[leadId];if(!l)return;
-  const comments=[...(l.comments||[]),{
-    texto:txt,autor:window._user?.nome||'Usuário',
-    hora:new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
+/* ═══ AVANÇAR LEAD (botão no card) ═══ */
+function avançarLead(id){
+  const l=(window._leads||{})[id];if(!l)return;
+  const mapE=e=>e==='contato'?'novo':e==='ganho'?'fechado':e;
+  const cur=mapE(l.etapa);
+  const prox=PROX_ETAPA[cur];
+  if(!prox)return;
+  abrirPopupMover(id, cur, prox);
+}
+window.avançarLead=avançarLead;
+
+/* ═══ MARCAR COMO PERDIDO (justificativa obrigatória) ═══ */
+function abrirPerdido(id){
+  const l=(window._leads||{})[id];if(!l)return;
+  window._perdidoPendente=id;
+  document.getElementById('perdidoNome').textContent=l.nome||'Lead';
+  document.getElementById('perdidoObs').value='';
+  /* Reset chips */
+  document.querySelectorAll('#perdidoMotivos button').forEach(b=>{
+    b.style.background='var(--white)';b.style.borderColor='var(--border)';b.style.color='var(--text2)';
+  });
+  document.getElementById('perdidoErro').style.display='none';
+  document.getElementById('modalPerdido').classList.add('open');
+  setTimeout(()=>document.getElementById('perdidoObs').focus(),80);
+}
+function usarMotivoPerdido(btn){
+  document.getElementById('perdidoObs').value=btn.textContent;
+  document.querySelectorAll('#perdidoMotivos button').forEach(b=>{
+    b.style.background='var(--white)';b.style.borderColor='var(--border)';b.style.color='var(--text2)';
+  });
+  btn.style.background='var(--red-l)';btn.style.borderColor='var(--red)';btn.style.color='var(--red)';
+}
+function confirmarPerdido(){
+  const id=window._perdidoPendente;if(!id)return;
+  const obs=document.getElementById('perdidoObs').value.trim();
+  if(!obs){
+    document.getElementById('perdidoErro').style.display='block';
+    document.getElementById('perdidoObs').focus();
+    return;
+  }
+  const l=(window._leads||{})[id];
+  const mapE=e=>e==='contato'?'novo':e==='ganho'?'fechado':e;
+  const etapaOrigem=mapE(l?.etapa||'novo');
+  const usuario=window._user?.nome||'Usuario';
+  const hist=[...(l?.historico||[]),{
+    ts:Date.now(),tipo:'outro',retorno:'nao',
+    texto:`[Perdido] ${obs}`,
+    autor:usuario,
+    etapaMov:{de:etapaOrigem,para:'perdido'}
   }];
-  window._update(leadId,{comments});
-  inp.value='';
+  window._update(id,{etapa:'perdido',etapaSince:Date.now(),historico:hist});
+  document.getElementById('modalPerdido').classList.remove('open');
+  logEvento('mover','Marcou "'+(l?.nome||'lead')+'" como Perdido (de '+ELBL[etapaOrigem]+')',obs);
+  window._perdidoPendente=null;
+  toast('Lead marcado como perdido','warn');
+}
+function cancelarPerdido(){
+  document.getElementById('modalPerdido').classList.remove('open');
+  window._perdidoPendente=null;
+}
+window.abrirPerdido=abrirPerdido;
+window.usarMotivoPerdido=usarMotivoPerdido;
+window.confirmarPerdido=confirmarPerdido;
+window.cancelarPerdido=cancelarPerdido;
+
+/* ═══ CLIENTES — Carteira de Clientes ═══ */
+const CLI_TIPOS=[
+  {key:'negociacao',label:'Negociação',badge:'b-negociacao'},
+  {key:'preco',     label:'Preço Enviado',badge:'b-preco'},
+  {key:'visita',    label:'Visita',badge:'b-visita'},
+  {key:'whatsapp',  label:'WhatsApp',badge:'b-whatsapp'},
+  {key:'ligacao',   label:'Ligação',badge:'b-ligacao'},
+  {key:'email',     label:'E-mail',badge:'b-email'},
+  {key:'reuniao',   label:'Reunião',badge:'b-reuniao'},
+  {key:'outro',     label:'Outro',badge:'b-outro'},
+];
+let _cliTipoAtivo={};/* por clienteId */
+
+function renderClientes(){
+  const clientes=window._clientes||{};
+  const busca=(document.getElementById('cliBusca')?.value||'').toLowerCase();
+  let arr=Object.entries(clientes).filter(([,c])=>{
+    if(!busca) return true;
+    return [(c.nome||''),(c.empresa||''),(c.produto||''),(c.tel||'')].join(' ').toLowerCase().includes(busca);
+  }).sort((a,b)=>{
+    /* Mais recente interação primeiro */
+    const la=a[1].timeline?.length?a[1].timeline[a[1].timeline.length-1].ts:a[1].desde||0;
+    const lb=b[1].timeline?.length?b[1].timeline[b[1].timeline.length-1].ts:b[1].desde||0;
+    return lb-la;
+  });
+
+  const badge=document.getElementById('badge-clientes');
+  if(badge) badge.textContent=Object.keys(clientes).length;
+  document.getElementById('cliCount').textContent=arr.length+' cliente'+(arr.length!==1?'s':'');
+
+  if(!arr.length){
+    document.getElementById('cliGrid').innerHTML=`<div style="text-align:center;padding:48px 20px;">
+      <div style="width:60px;height:60px;border-radius:50%;background:var(--gray);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gray3)" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      </div>
+      <div style="font-size:0.85rem;font-weight:600;color:var(--text);margin-bottom:4px;">Nenhum cliente ainda</div>
+      <div style="font-size:0.72rem;color:var(--muted);line-height:1.5;">Leads que chegam ao estágio "Fechado" aparecem aqui automaticamente.</div>
+    </div>`;
+    return;
+  }
+
+  document.getElementById('cliGrid').innerHTML=arr.map(([id,c])=>{
+    const desde=c.desde?new Date(c.desde).toLocaleDateString('pt-BR'):'--';
+    const tl=c.timeline||[];
+    const tipoAtivo=_cliTipoAtivo[id]||'whatsapp';
+
+    const tlHtml=tl.length?tl.slice().reverse().slice(0,15).map(t=>{
+      const tipo=t.tipo||'outro';
+      const tipoObj=CLI_TIPOS.find(x=>x.key===tipo)||CLI_TIPOS[CLI_TIPOS.length-1];
+      const ts=new Date(t.ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+      return `<div class="cli-tl-item">
+        <div class="cli-tl-dot t-${tipo}"></div>
+        <div class="cli-tl-header">
+          <span class="cli-tl-badge ${tipoObj.badge}">${tipoObj.label}</span>
+          ${t.valor?`<span class="cli-tl-valor">R$ ${t.valor}</span>`:''}
+          <span class="cli-tl-ts">${ts}</span>
+        </div>
+        ${t.texto?`<div class="cli-tl-txt">${esc(t.texto)}</div>`:''}
+        ${t.autor?`<div style="font-size:0.6rem;color:var(--muted);margin-top:2px;">por ${esc(t.autor)}</div>`:''}
+      </div>`;
+    }).join(''):'<div class="cli-tl-empty">Nenhuma interação registrada</div>';
+
+    return `<div class="cli-card" id="cli-${id}">
+      <div class="cli-card-head" onclick="toggleCliente('${id}')">
+        <div class="cli-card-info">
+          <div class="cli-card-nome">${esc(c.nome)}</div>
+          ${c.empresa?`<div class="cli-card-empresa">${esc(c.empresa)}</div>`:''}
+          <div class="cli-card-tags">
+            ${c.produto?`<span class="cli-tag cli-tag-produto">${esc(c.produto)}</span>`:''}
+            ${c.tel?`<span class="cli-tag cli-tag-tel">${esc(c.tel)}</span>`:''}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+          <div class="cli-card-desde">Cliente desde ${desde}</div>
+          <svg class="cli-card-toggle" id="cli-toggle-${id}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="cli-card-body" id="cli-body-${id}">
+        <div class="cli-tl">${tlHtml}</div>
+        <div class="cli-form">
+          <div class="cli-form-title">Registrar interação</div>
+          <div class="cli-tipo-row">
+            ${CLI_TIPOS.map(t=>`<button class="cli-tipo-btn${tipoAtivo===t.key?' active':''}" onclick="setCliTipo('${id}','${t.key}',this)">${t.label}</button>`).join('')}
+          </div>
+          <div class="cli-valor-field${tipoAtivo==='preco'||tipoAtivo==='negociacao'?' show':''}" id="cli-valor-wrap-${id}">
+            <label>Valor R$</label>
+            <input type="text" id="cli-valor-${id}" placeholder="0,00" inputmode="decimal">
+          </div>
+          <div class="cli-form-row">
+            <input type="text" id="cli-input-${id}" placeholder="Descreva a interação...">
+            <button onclick="addCliInteracao('${id}')">Registrar</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
-/* Injeta comentários nos cards do pipeline após renderizar */
-const _renderPipelineBase=renderPipeline;
-function renderPipelineComComentarios(){
-  _renderPipelineBase();
-  /* Adiciona seção de comentários em cada card */
-  const leads=window._leads||{};
-  Object.entries(leads).filter(([,l])=>l.qual==='quente').forEach(([id,l])=>{
-    const cardEl=document.querySelector(`.card[data-id="${id}"] .card-body`);
-    if(!cardEl)return;
-    if(cardEl.querySelector('.comments-section'))return;
-    const comments=l.comments||[];
-    const div=document.createElement('div');
-    div.className='comments-section';
-    const list=comments.slice(-3).map(c=>`
-      <div class="comment-item">
-        <span class="comment-who">${esc(c.autor)}</span>
-        <span class="comment-txt">${esc(c.texto)}</span>
-        <span class="comment-time">${c.hora}</span>
-      </div>`).join('');
-    div.innerHTML=`${list}<div class="comment-form">
-      <input id="ci-${id}" type="text" placeholder="Comentar..." onkeydown="if(event.key==='Enter')adicionarComentario('${id}')">
-      <button onclick="adicionarComentario('${id}')">Enviar</button>
-    </div>`;
-    cardEl.appendChild(div);
+function toggleCliente(id){
+  const body=document.getElementById('cli-body-'+id);
+  const toggle=document.getElementById('cli-toggle-'+id);
+  if(!body) return;
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open');
+  toggle?.classList.toggle('open');
+}
+
+function setCliTipo(cliId,tipo,btn){
+  _cliTipoAtivo[cliId]=tipo;
+  const row=btn.closest('.cli-tipo-row');
+  row.querySelectorAll('.cli-tipo-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const valorWrap=document.getElementById('cli-valor-wrap-'+cliId);
+  if(valorWrap){
+    valorWrap.classList.toggle('show',tipo==='preco'||tipo==='negociacao');
+  }
+}
+
+function addCliInteracao(cliId){
+  const input=document.getElementById('cli-input-'+cliId);
+  const valorInput=document.getElementById('cli-valor-'+cliId);
+  const texto=(input?.value||'').trim();
+  if(!texto){input?.focus();return;}
+  const tipo=_cliTipoAtivo[cliId]||'whatsapp';
+  const valor=(valorInput?.value||'').trim();
+  const c=(window._clientes||{})[cliId];if(!c) return;
+  const entry={
+    ts:Date.now(),
+    tipo:tipo,
+    texto:texto,
+    autor:window._user?.nome||'Usuario',
+  };
+  if(valor&&(tipo==='preco'||tipo==='negociacao')) entry.valor=valor;
+  const tl=[...(c.timeline||[]),entry];
+  window._cliUpdate(cliId,{timeline:tl});
+  if(input) input.value='';
+  if(valorInput) valorInput.value='';
+  toast('Interação registrada','ok');
+}
+
+/* Auto-migrar lead "fechado" para clientes */
+function migrarParaCliente(leadId){
+  const l=(window._leads||{})[leadId];if(!l) return;
+  /* Verifica se já existe cliente com mesmo nome+empresa */
+  const clientes=window._clientes||{};
+  const jaExiste=Object.entries(clientes).find(([,c])=>
+    (c.nome||'').toLowerCase()===(l.nome||'').toLowerCase() &&
+    (c.empresa||'').toLowerCase()===(l.empresa||'').toLowerCase()
+  );
+  if(jaExiste) return;/* já migrado */
+  window._cliPush({
+    nome:l.nome||'',
+    empresa:l.empresa||'',
+    tel:l.tel||'',
+    email:l.email||'',
+    cidade:l.cidade||'',
+    produto:l.produto||'',
+    desde:Date.now(),
+    leadId:leadId,
+    timeline:[{
+      ts:Date.now(),
+      tipo:'negociacao',
+      texto:'Cliente convertido do pipeline (lead fechado)',
+      autor:window._user?.nome||'Sistema'
+    }]
   });
 }
-window.renderPipeline=renderPipelineComComentarios;
+
+/* Hook no confirmarMover para auto-migrar quando etapa=fechado */
+const _confirmarMoverOriginal=confirmarMover;
+window.confirmarMover=function(){
+  _confirmarMoverOriginal();
+  /* Verifica se acabou de mover pra fechado */
+  if(_moverPendente===null){/* já moveu */
+    /* Precisa pegar do último mover — checar via DOM... melhor hook direto */
+  }
+};
+/* Override mais limpo: hook no _update para detectar etapa=fechado */
+const _updateOriginal=window._update;
+window._update=function(id,data){
+  _updateOriginal(id,data);
+  if(data.etapa==='fechado'||data.etapa==='ganho'){
+    setTimeout(()=>migrarParaCliente(id),500);
+  }
+};
+
+window.renderClientes=renderClientes;
+window.toggleCliente=toggleCliente;
+window.setCliTipo=setCliTipo;
+window.addCliInteracao=addCliInteracao;
+window.migrarParaCliente=migrarParaCliente;
 
 /* ═══ EXPORTAR LEADS (CSV + abre em nova janela como PDF) ═══ */
 function exportarLeads(){
   const leads=Object.values(window._leads||{});
   if(!leads.length){toast('Nenhum lead para exportar');return;}
-  const ETAPA_LBL={contato:'Contato feito',proposta:'Proposta enviada',negociacao:'Em negociação',ganho:'Fechado/Ganho',perdido:'Perdido',frio:'Banco de leads'};
+  const ETAPA_LBL={novo:'Novo Lead',retorno:'Retorno Feito',proposta:'Proposta Enviada',negociacao:'Negociação',fechado:'Fechado',perdido:'Perdido',frio:'Banco de leads',contato:'Novo Lead',ganho:'Fechado'};
   const sorted=[...leads].sort((a,b)=>(b.data||0)-(a.data||0));
 
   /* CSV com BOM para Excel reconhecer UTF-8 */
@@ -2161,6 +2536,38 @@ window.onSelectUser=onSelectUser;
   </div>
 </div>
 </div>
+
+<!-- ═══ MODAL PERDIDO (justificativa obrigatória) ═══ -->
+<div class="modal-bg" id="modalPerdido">
+<div class="modal" style="width:440px">
+  <div class="modal-head">
+    <div class="modal-title" style="color:var(--red)">Marcar como Perdido</div>
+    <div class="modal-sub"><span id="perdidoNome">Lead</span> — informe o motivo</div>
+    <div style="height:14px"></div>
+  </div>
+  <div class="modal-body" style="padding-top:16px">
+    <div style="font-size:0.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Motivo</div>
+    <div id="perdidoMotivos" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+      <button onclick="usarMotivoPerdido(this)" style="padding:5px 12px;border:1.5px solid var(--border);border-radius:20px;background:var(--white);font-family:'Poppins',sans-serif;font-size:0.68rem;cursor:pointer;color:var(--text2);transition:all 0.15s;">Sem retorno</button>
+      <button onclick="usarMotivoPerdido(this)" style="padding:5px 12px;border:1.5px solid var(--border);border-radius:20px;background:var(--white);font-family:'Poppins',sans-serif;font-size:0.68rem;cursor:pointer;color:var(--text2);transition:all 0.15s;">Escolheu concorrente</button>
+      <button onclick="usarMotivoPerdido(this)" style="padding:5px 12px;border:1.5px solid var(--border);border-radius:20px;background:var(--white);font-family:'Poppins',sans-serif;font-size:0.68rem;cursor:pointer;color:var(--text2);transition:all 0.15s;">Preço fora do orcamento</button>
+      <button onclick="usarMotivoPerdido(this)" style="padding:5px 12px;border:1.5px solid var(--border);border-radius:20px;background:var(--white);font-family:'Poppins',sans-serif;font-size:0.68rem;cursor:pointer;color:var(--text2);transition:all 0.15s;">Projeto cancelado</button>
+      <button onclick="usarMotivoPerdido(this)" style="padding:5px 12px;border:1.5px solid var(--border);border-radius:20px;background:var(--white);font-family:'Poppins',sans-serif;font-size:0.68rem;cursor:pointer;color:var(--text2);transition:all 0.15s;">Produto nao atende</button>
+      <button onclick="usarMotivoPerdido(this)" style="padding:5px 12px;border:1.5px solid var(--border);border-radius:20px;background:var(--white);font-family:'Poppins',sans-serif;font-size:0.68rem;cursor:pointer;color:var(--text2);transition:all 0.15s;">Prazo incompativel</button>
+    </div>
+    <div class="fld">
+      <label>Justificativa *</label>
+      <textarea id="perdidoObs" rows="3" placeholder="Descreva por que este lead foi perdido..."></textarea>
+    </div>
+    <div id="perdidoErro" style="display:none;background:var(--red-l);border:1px solid #f5b0b0;border-radius:7px;padding:9px 12px;font-size:0.73rem;color:var(--red);margin-top:10px;">Justificativa obrigatoria. Informe o motivo da perda.</div>
+  </div>
+  <div class="modal-foot">
+    <div><button class="btn-cancel" onclick="cancelarPerdido()">Cancelar</button></div>
+    <div><button class="btn-save" onclick="confirmarPerdido()" style="background:var(--red)">Confirmar perda</button></div>
+  </div>
+</div>
+</div>
+
 <!-- ═══ BOTTOM NAV MOBILE ═══ -->
 <nav id="bottomNav" style="display:none;position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:360px;height:60px;background:var(--surface);border-radius:30px;align-items:center;justify-content:space-around;z-index:200;box-shadow:0 4px 24px rgba(0,0,0,0.10),0 1px 4px rgba(0,0,0,0.06);padding:0 8px;">
   <button class="bnav" id="bn-dashboard" onclick="bnSwitch('dashboard',this)">
@@ -2180,6 +2587,12 @@ window.onSelectUser=onSelectUser;
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
     </div>
     <span class="bnav-lbl">Leads</span>
+  </button>
+  <button class="bnav" id="bn-clientes" onclick="bnSwitch('clientes',this)">
+    <div class="bnav-pill">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    </div>
+    <span class="bnav-lbl">Clientes</span>
   </button>
   <button class="bnav" id="bn-historico" onclick="bnSwitch('historico',this)">
     <div class="bnav-pill">
